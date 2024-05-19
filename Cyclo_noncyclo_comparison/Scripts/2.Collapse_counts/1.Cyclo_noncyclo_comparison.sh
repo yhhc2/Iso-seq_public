@@ -1,7 +1,7 @@
 # !/bin/bash
 # Hank Cheng
 # 7/1/2023
-# sh Cyclo_noncyclo_comparison.sh > Cyclo_noncyclo_comparison_out.txt 2>&1
+# Usage: sh 1.Cyclo_noncyclo_comparison.sh > 1.Cyclo_noncyclo_comparison_out.txt 2>&1
 
 
 
@@ -29,16 +29,16 @@
 sample_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/Sample_names_and_bam_locations.tsv"
 
 # Define the directory containing split read stats
-split_read_stats_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/1.Split_read_stats"
+split_read_stats_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/1.Split_read_stats"
 
 # Define the output base directory for storing each id's results
-output_base_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/2.Cyclo_noncyclo_comparison/Results"
+output_base_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Results"
 
 # Define classification file from pigeon
 classification="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/7-pigeon/pigeon_classification.txt"
 
-# Define location of script
-script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/2.Cyclo_noncyclo_comparison/Cyclo_noncyclo_comparison_general_collapse_isoform.sh"
+# Define location of helper script
+script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Cyclo_noncyclo_comparison_general_collapse_isoform.sh"
 
 # Extract unique IDs from the TSV file (assuming 'id' is in the 10th column and skipping the header)
 unique_ids=$(cut -f10 $sample_file | tail -n +2 | sort | uniq)
