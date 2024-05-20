@@ -82,18 +82,40 @@ print(paste("Finished bin calculations at:", Sys.time()))
 
 print(paste("Starting chi-square calculations at:", Sys.time()))
 
-# Potential future work: Add parallelization.
 
-# Step 5: Apply the chi-square test for each Sample and gene
-wide_result[, c("p_value") := {
-  matrix_data <- matrix(c(Total_bin_cyclo_count_Bin1_le, Total_bin_cyclo_count_Bin2_g,
-                          Total_bin_noncyclo_count_Bin1_le, Total_bin_noncyclo_count_Bin2_g),
-                        nrow = 2, byrow = TRUE)
-  if (any(matrix_data != 0)){
-    test <- chisq.test(matrix_data)
-    list(test$p.value)
-  }
-}, by = .(Sample, associated_gene)]
+# Setup parallel backend
+no_cores <- detectCores() - 1
+cl <- makeCluster(no_cores)
+registerDoParallel(cl)
+
+# Calculate chunk size and split data into chunks
+chunk_size <- ceiling(nrow(wide_result) / no_cores)
+chunks <- split(wide_result, (seq_len(nrow(wide_result)) - 1) %/% chunk_size + 1)
+
+# Parallel computation of p-values for each chunk. The parallel structure
+# is slightly different from hyp1. It's easier to do conditional test in the chunk block
+# without using mapply.
+p_values_list <- foreach(chunk = chunks, .packages = c("data.table", "stats")) %dopar% {
+  # Apply the chi-square test for each Sample and gene within each chunk
+  chunk[, p_value := {
+    matrix_data <- matrix(c(Total_bin_cyclo_count_Bin1_le, Total_bin_cyclo_count_Bin2_g,
+                            Total_bin_noncyclo_count_Bin1_le, Total_bin_noncyclo_count_Bin2_g),
+                          nrow = 2, byrow = TRUE)
+    if (any(matrix_data != 0)){
+      test <- chisq.test(matrix_data)
+      test$p.value
+    } else {
+      NA  # Ensure to return NA if the test cannot be performed
+    }
+  }, by = .(Sample, associated_gene)]
+  return(chunk)
+}
+
+# Combine chunks back into the full dataset
+wide_result <- rbindlist(p_values_list)
+
+# Stop the cluster
+stopCluster(cl)
 
 # Rename p-value to P_Value_Hyp5
 setnames(wide_result, "p_value", "P_Value_Hyp5")
