@@ -3,7 +3,8 @@
 
 # Usage: 
 # conda activate r_env_per_isoform
-# Rscript 1.Group_by_abundance_in_noncyclo_genome_wide.R > 1.Group_by_abundance_in_noncyclo_genome_wide_output.txt 2>&1
+# Rscript 1.Group_by_abundance_in_noncyclo_genome_wide.R "/path/to/isoform_level.csv" "/path/to/gene_level.csv" 0.5 0.005 0.01 0.00000001
+
 
 # Load necessary libraries
 library(dplyr)
@@ -14,21 +15,22 @@ library(doParallel)
 library(stats) # For chisq.test
 library(testthat)
 
-# Step 1: Read the CSV file
-dt_isoform_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/1.Isoform/data_combined_full.csv")
-dt_gene_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/2.Gene/data_combined_full.csv")
+# Parsing Command-Line Arguments
+args <- commandArgs(trailingOnly = TRUE)
 
-# Hyp1 masking proportion threshold
-# Use 10 if you want no masking
-# Use 1 if you want masking only if hyp1 is sig in ALL controls
-hyp1_sig_proportion_masking_threshold <- 0.5
+# Check for correct number of arguments
+if (length(args) != 6) {
+  stop("Usage: Rscript 1.Group_by_abundance_in_noncyclo_genome_wide.R <dt_isoform_level_file> <dt_gene_level_file> <hyp1_sig_proportion_masking_threshold> <bin_proportion> <significance_threshold> <masking_threshold>", call. = FALSE)
+}
 
-# Bin proportion for minor bin used in hypothesis 5
-bin_proportion <- 0.005
+# Assign variables from arguments
+dt_isoform_level <- args[1]
+dt_gene_level <- args[2]
+hyp1_sig_proportion_masking_threshold <- as.numeric(args[3]) # Use 10 if you want no masking. Use 1 if you want masking only if hyp1 is sig in ALL controls
+bin_proportion <- as.numeric(args[4]) # Bin proportion for minor bin used in hypothesis 5
+significance_threshold <- as.numeric(args[5])
+masking_threshold <- as.numeric(args[6])
 
-# Set thresholds
-significance_threshold <- 0.01
-masking_threshold <- 0.00000001
 
 # This is used for unit testing
 number_of_rows_dt_gene <- nrow(dt_gene_level)
@@ -164,17 +166,13 @@ for (sample in samples) {
   significant_isoforms <- sample_data[P_Value_Hyp5 < significance_threshold]
   
   
-  # Filter isoforms that are non-significant across all controls
-  # isoforms_non_significant_in_controls <- control_data[, .(MinPValue = min(P_Value_Hyp1, na.rm = TRUE)), by = .(Isoform_PBid)
-  #                                                      ][MinPValue > masking_threshold, .(Isoform_PBid)]
-  
   # Filter isoforms that are non-significant across all controls. One sided significance.
   # na.rm because nan values are reported as minimum even though they should be considered the same as 
   # a p-value of 1.
   # Cyclo_TPM > Noncyclo_TPM.
   isoforms_significant_in_controls <- control_data[
     Cyclo_TPM > Noncyclo_TPM, 
-    .(MinPValue = min(P_Value_Hyp1, na.rm = TRUE)), 
+    .(MinPValue = min(P_Value_Hyp5, na.rm = TRUE)), 
     by = .(Isoform_PBid)
   ][MinPValue < masking_threshold, .(Isoform_PBid)]
   
@@ -182,14 +180,25 @@ for (sample in samples) {
   # To remove isoforms significant in controls from significant_isoforms, perform an anti-join
   # This uses the `data.table` syntax for anti-join: `!in`
   top_isoforms <- significant_isoforms[!Isoform_PBid %in% isoforms_significant_in_controls$Isoform_PBid]
+
+  # Using hyp1 to further remove genes using controls
+  ###############
+  # Check the proportion of controls where P_Values_Hyp1 for a gene are below the masking threshold and NormalizedFractionDifference > 0
+  gene_significant_in_controls_hyp1 <- control_data[, .(
+    ProportionSignificant = sum(P_Value_Hyp1 < masking_thresh & NormalizedFractionDifference > 0) / .N
+  ), by = .(associated_gene)]
+
+  # Filter to keep only those genes where ProportionSignificant is greater than or equal to 0.5
+  significant_genes <- gene_significant_in_controls_hyp1[ProportionSignificant >= hyp1_sig_proportion_masking_threshold, associated_gene]
+
+  # Remove these genes from wide_result_sample
+  top_isoforms <- top_isoforms[!associated_gene %in% significant_genes]
+  ###############
   
   
   # Sort top_isoforms by P_Value_Hyp1. Ascending order.
   top_isoforms <- top_isoforms[order(P_Value_Hyp5)]
-  
-  # Store in the list with the sample name as the list name
-  # top_isoforms_list[[sample]] <- top_isoforms
-  
+    
   # Create a filename using the sample name
   filename <- paste0("Hyp5_Top_Isoforms_", sample, ".csv")
   

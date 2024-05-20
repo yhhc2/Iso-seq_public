@@ -1,8 +1,7 @@
 # !/bin/bash
 # Hank Cheng
 # 7/1/2023
-# Usage: sh 1.Cyclo_noncyclo_comparison.sh > 1.Cyclo_noncyclo_comparison_out.txt 2>&1
-
+# Usage: bash 1.Cyclo_noncyclo_comparison.sh /path/to/sample_file.tsv /path/to/split_read_stats /path/to/output_base_dir /path/to/classification.txt /path/to/helper_script.sh > output.txt 2>&1
 
 
 # Run Cyclo_noncyclo_comparison_general_collapse_isoform.sh for each patient. 
@@ -25,20 +24,18 @@
 # Script
 #############################################################################
 
-# Define the input TSV file
-sample_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/Sample_names_and_bam_locations.tsv"
+# Check for correct number of arguments
+if [ "$#" -ne 5 ]; then
+    echo "Usage: $0 <sample_file> <split_read_stats_dir> <output_base_dir> <classification> <helper_script>"
+    exit 1
+fi
 
-# Define the directory containing split read stats
-split_read_stats_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/1.Split_read_stats"
-
-# Define the output base directory for storing each id's results
-output_base_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Results"
-
-# Define classification file from pigeon
-classification="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/7-pigeon/pigeon_classification.txt"
-
-# Define location of helper script
-script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Cyclo_noncyclo_comparison_general_collapse_isoform.sh"
+# Assign command line arguments to variables
+sample_file="$1"
+split_read_stats_dir="$2"
+output_base_dir="$3"
+classification="$4"
+helper_script="$5"
 
 # Extract unique IDs from the TSV file (assuming 'id' is in the 10th column and skipping the header)
 unique_ids=$(cut -f10 $sample_file | tail -n +2 | sort | uniq)
@@ -60,7 +57,7 @@ for id in $unique_ids; do
         pushd "${output_base_dir}/${id}"
 
         # Run the provided script with the paths as arguments and direct the output to the id's directory
-        sh "$script" "$combined_readstat" "$classification" "$noncyclo_readstat" "$cyclo_readstat"
+        sh "$helper_script" "$combined_readstat" "$classification" "$noncyclo_readstat" "$cyclo_readstat"
 
         # Return to the previous directory
         popd

@@ -2,12 +2,18 @@
 # Hank Cheng
 # 2024/03
 
-# Usage: bash 1.Split_read_stats_awk.sh > 1.Split_read_stats_awk.sh_out.txt 2>&1
+# Usage: bash 1.Split_read_stats_awk.sh /path/to/read_stat.txt /path/to/sample_file.tsv > output.txt 2>&1
 
+# Check if proper arguments are passed
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <read_stat_file> <sample_file>"
+    exit 1
+fi
 
-# Define the input files
-read_stat_file="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/6-collapsed/collapsed.read_stat.txt"
-sample_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/Sample_names_and_bam_locations.tsv"
+# Assign input files from command line arguments
+read_stat_file="$1"
+sample_file="$2"
+
 
 # Pre-process the sample_file to create a map of PS# to id_cyclo_noncyclo
 awk -F '\t' 'NR > 1 {print $1, $10 "_" $11}' "$sample_file" > /tmp/ps_id_cyclo_map.txt

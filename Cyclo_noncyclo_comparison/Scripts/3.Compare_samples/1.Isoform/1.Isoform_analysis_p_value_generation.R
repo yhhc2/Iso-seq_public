@@ -7,8 +7,25 @@ print(paste("Start time:", start_time))
 
 # Usage: 
 # conda activate r_env_per_isoform
-# Rscript 1.Isoform_analysis_p_value_generation.R > 1.Isoform_analysis_p_value_generation_output.txt 2>&1
-# #Note: You might need an ultramem compute node. salloc -A stergachislab --mem=500G --time="1-0" -p compute-ultramem -c 18
+# Rscript 1.Isoform_analysis_p_value_generation.R "/path/to/sample_info.tsv" "/path/to/omim_file.txt" FALSE 0.01 0.01 6
+#Note: You might need an ultramem compute node. salloc -A stergachislab --mem=500G --time="1-0" -p compute-ultramem -c 18
+
+# Parsing Command-Line Arguments
+args <- commandArgs(trailingOnly = TRUE)
+
+# Check for correct number of arguments
+if (length(args) != 6) {
+  stop("Usage: Rscript 1.Isoform_analysis_p_value_generation.R <sample_info_path> <omim_file_path> <gene_level> <significance_threshold> <masking_threshold> <count_threshold>", call. = FALSE)
+}
+
+# Assign variables from arguments
+sample_info_path <- args[1]
+omim_file_path <- args[2]
+gene_level <- as.logical(args[3])  # Expecting 'TRUE' or 'FALSE'
+significance_threshold <- as.numeric(args[4])
+masking_threshold <- as.numeric(args[5])
+count_threshold <- as.numeric(args[6])
+
 
 # Load necessary libraries
 library(dplyr)
