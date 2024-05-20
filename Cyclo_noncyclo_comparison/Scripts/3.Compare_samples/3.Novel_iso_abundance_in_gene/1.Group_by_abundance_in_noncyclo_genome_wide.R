@@ -30,6 +30,9 @@ bin_proportion <- 0.005
 significance_threshold <- 0.01
 masking_threshold <- 0.00000001
 
+# This is used for unit testing
+number_of_rows_dt_gene <- nrow(dt_gene_level)
+
 
 #############################################################
 # Perform bin calculations
@@ -83,40 +86,16 @@ print(paste("Finished bin calculations at:", Sys.time()))
 print(paste("Starting chi-square calculations at:", Sys.time()))
 
 
-# Setup parallel backend
-no_cores <- detectCores() - 1
-cl <- makeCluster(no_cores)
-registerDoParallel(cl)
-
-# Calculate chunk size and split data into chunks
-chunk_size <- ceiling(nrow(wide_result) / no_cores)
-chunks <- split(wide_result, (seq_len(nrow(wide_result)) - 1) %/% chunk_size + 1)
-
-# Parallel computation of p-values for each chunk. The parallel structure
-# is slightly different from hyp1. It's easier to do conditional test in the chunk block
-# without using mapply.
-p_values_list <- foreach(chunk = chunks, .packages = c("data.table", "stats")) %dopar% {
-  # Apply the chi-square test for each Sample and gene within each chunk
-  chunk[, p_value := {
-    matrix_data <- matrix(c(Total_bin_cyclo_count_Bin1_le, Total_bin_cyclo_count_Bin2_g,
-                            Total_bin_noncyclo_count_Bin1_le, Total_bin_noncyclo_count_Bin2_g),
-                          nrow = 2, byrow = TRUE)
-    if (any(matrix_data != 0)){
-      test <- chisq.test(matrix_data)
-      test$p.value
-    } else {
-      NA  # Ensure to return NA if the test cannot be performed
-    }
-  }, by = .(Sample, associated_gene)]
-  return(chunk)
-}
-
-# Combine chunks back into the full dataset
-wide_result <- rbindlist(p_values_list)
-
-# Stop the cluster
-stopCluster(cl)
-
+# Step 5: Apply the chi-square test for each Sample and gene
+wide_result[, c("p_value") := {
+  matrix_data <- matrix(c(Total_bin_cyclo_count_Bin1_le, Total_bin_cyclo_count_Bin2_g,
+                          Total_bin_noncyclo_count_Bin1_le, Total_bin_noncyclo_count_Bin2_g),
+                        nrow = 2, byrow = TRUE)
+  if (any(matrix_data != 0)){
+    test <- chisq.test(matrix_data)
+    list(test$p.value)
+  }
+}, by = .(Sample, associated_gene)]
 # Rename p-value to P_Value_Hyp5
 setnames(wide_result, "p_value", "P_Value_Hyp5")
 
@@ -182,7 +161,7 @@ for (sample in samples) {
   control_data <- wide_result[Sample != sample]
   
   # Find isoforms significant in the sample but not in controls. One sided significance.
-  significant_isoforms <- sample_data[P_Value_Hyp1 < significance_threshold & Cyclo_TPM > Noncyclo_TPM]
+  significant_isoforms <- sample_data[P_Value_Hyp5 < significance_threshold]
   
   
   # Filter isoforms that are non-significant across all controls
@@ -206,7 +185,7 @@ for (sample in samples) {
   
   
   # Sort top_isoforms by P_Value_Hyp1. Ascending order.
-  top_isoforms <- top_isoforms[order(P_Value_Hyp1)]
+  top_isoforms <- top_isoforms[order(P_Value_Hyp5)]
   
   # Store in the list with the sample name as the list name
   # top_isoforms_list[[sample]] <- top_isoforms
@@ -251,4 +230,14 @@ test_that("no NA values in key columns of wide_result", {
 
 test_that("P_Value_Hyp5 are valid probabilities", {
   expect_true(all(is.na(wide_result$P_Value_Hyp5) | wide_result$P_Value_Hyp5 >= 0 & wide_result$P_Value_Hyp5 <= 1))
+})
+
+test_that("dt_gene_level and wide_result have the same number of rows", {
+  # Assume dt_gene_level and wide_result are already defined and loaded
+  
+  num_rows_wide_result <- nrow(wide_result)
+  
+  # Test if the number of rows are the same
+  expect_equal(number_of_rows_dt_gene, num_rows_wide_result, 
+               info = "The number of rows in dt_gene_level should match the number of rows in wide_result.")
 })
