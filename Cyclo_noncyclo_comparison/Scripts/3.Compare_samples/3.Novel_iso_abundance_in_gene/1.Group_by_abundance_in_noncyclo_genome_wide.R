@@ -18,8 +18,6 @@ library(testthat)
 dt_isoform_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/3.Comparison_between_samples/Isoform/data_combined_full.csv")
 dt_gene_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/3.Comparison_between_samples/Gene/data_combined_full.csv")
 
-omim_file <- "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/3.15.24_merge_aligned_bams/4.Comparison_between_samples/Combined_OMIM_Isoform_4.3.24/genemap2_7.21.23.txt"
-
 # Hyp1 masking proportion threshold
 # Use 10 if you want no masking
 # Use 1 if you want masking only if hyp1 is sig in ALL controls
@@ -27,6 +25,10 @@ hyp1_sig_proportion_masking_threshold <- 0.5
 
 # Bin proportion for minor bin used in hypothesis 5
 bin_proportion <- 0.005
+
+# Set thresholds
+significance_threshold <- 0.01
+masking_threshold <- 0.00000001
 
 #isoform_noncyclo_proportion can have a value of NaN
 #This is because 0/0 = NaN. So if a gene has 0 counts,
@@ -73,255 +75,98 @@ wide_result[, c("p_value") := {
   }
 }, by = .(Sample, associated_gene)]
 
+# Rename p-value to P_Value_Hyp5
+setnames(wide_result, "p_value", "P_Value_Hyp5")
+
 # Step 6: Calculate proportions for cyclo and noncyclo counts across bins for each gene
 wide_result[, proportion_in_Bin1_cyclo := Total_bin_cyclo_count_Bin1_le / (Total_bin_cyclo_count_Bin2_g + Total_bin_cyclo_count_Bin1_le)]
 wide_result[, proportion_in_Bin1_noncyclo := Total_bin_noncyclo_count_Bin1_le / (Total_bin_noncyclo_count_Bin2_g + Total_bin_noncyclo_count_Bin1_le)]
 
 
 #############################################################
-# Add omim data
+# Add all the columns from dt_gene_level
 #############################################################
 
-# some genes are not included when I read in the data for some reason. Like PDZK1
-# This is fixed by including the quote="" argument. https://www.biostars.org/p/221983/
-omim_data <- read.table(omim_file, header = TRUE, sep = "\t", check.names = FALSE, fill = TRUE, quote="")
-
-# Remove any rows where the approved gene symbol is empty. 
-omim_data <- omim_data %>%
-  filter(`Approved Gene Symbol` != "")
-
-# Handle pseudoautosomal genes. These genes have two rows in the omim data. For each gene, I want to collapse them into a single row.
-omim_data <- omim_data %>%
-  group_by(`Approved Gene Symbol`) %>%  # Ensure the column name is correct
-  summarize(
-    across(
-      .cols = everything(),  # Apply the function to all character columns except "Approved Gene Symbol"
-      .fns = ~paste(na.omit(.x), collapse = "; "),  # Concatenate, omitting NA values
-      .names = "{.col}"  # Keeps the original column names
-    ),
-    .groups = 'drop'  # Drop grouping structure after summarization
-  )
-
-# Handle the Phenotypes column of pseudoautosomal genes. Don't want ";" to be mistaken as
-# a valid phenotype.
-# Assuming omim_data is your dataframe
-# Replace ';' with '' in the Phenotypes column
-omim_data$Phenotypes[omim_data$Phenotypes == "; "] <- ""
-
-# Merge data frames based on the gene name column
-wide_result <- left_join(wide_result, rename(omim_data, associated_gene = "Approved Gene Symbol"), by = "associated_gene")
-
-# Add new column that indicates if omim phenotype is associated with gene
-wide_result <- wide_result %>%
-  mutate(PhenotypesNotEmpty = !is.na(Phenotypes) & Phenotypes != "")
-
-# Add the gene-level hypothesis 1 values and NormalizedFractionDifference to the datatable
 setDT(wide_result)
+
 names(dt_gene_level)[names(dt_gene_level) == "Isoform_PBid"] <- "associated_gene"
-wide_result <- merge(wide_result, dt_gene_level[, .(Sample, associated_gene, P_Value_Hyp1)], by = c("Sample", "associated_gene"), all.x = TRUE)
-wide_result <- merge(wide_result, dt_gene_level[, .(Sample, associated_gene, NormalizedFractionDifference)], by = c("Sample", "associated_gene"), all.x = TRUE)
 
-# Rename p-value to P_Value_Hyp5
-setnames(wide_result, "p_value", "P_Value_Hyp5")
+# Step 1: Identify the columns in dt_gene_level not in wide_result
+unique_columns <- setdiff(names(dt_gene_level), names(wide_result))
 
-# Pre-filter
-genes_to_keep <- wide_result[P_Value_Hyp5 < 0.1 & ((proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo)) > 0, unique(associated_gene)]
+# Ensure 'Sample' and 'associated_gene' are not part of the unique columns to merge
+unique_columns <- setdiff(unique_columns, c("Sample", "associated_gene"))
 
-# Step 2: Select rows with the genes of interest and only keep specified columns
-smaller_dt <- wide_result[associated_gene %in% genes_to_keep, .(
-  Sample,
-  associated_gene,
-  P_Value_Hyp5,
-  proportion_in_Bin1_cyclo,
-  proportion_in_Bin1_noncyclo,
-  Phenotypes,
-  P_Value_Hyp1,
-  NormalizedFractionDifference
-)]
+# Step 2: Merge all unique columns from dt_gene_level to wide_result
+# Specify the columns to keep from dt_gene_level (key columns + unique columns)
+columns_to_merge <- c("Sample", "associated_gene", unique_columns)
 
-# Remove rows with ((proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo)) <0
-smaller_dt <- smaller_dt[((proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo)) > 0]
+# Merge operation
+wide_result <- merge(wide_result, dt_gene_level[, ..columns_to_merge], by = c("Sample", "associated_gene"), all.x = TRUE)
 
-#fwrite(smaller_dt, "Hyp5_gene_data_combined_filtered_0.1_BCH_UDN_4.21.24.csv")
+# Create a filename using the sample name
+filename <- paste0("data_combined_full_gene_with_Hyp5.csv")
 
-data <- c()
+# Write the data.table to a CSV file
+fwrite(wide_result, file = filename)
 
-data$genes_filtered_hyp5 <- smaller_dt
+#######################################################################
+# Top genes based on Hyp5 p-values.
+#######################################################################
 
-saveRDS(data, "hank_data_hyp5.rds")
+# Get a vector of unique samples
+samples <- unique(wide_result$Sample)
 
-
-# Do this for plotting purposes.
-smaller_dt <- wide_result[associated_gene %in% genes_to_keep, .(
-  Sample,
-  associated_gene,
-  P_Value_Hyp5,
-  proportion_in_Bin1_cyclo,
-  proportion_in_Bin1_noncyclo,
-  Phenotypes,
-  PhenotypesNotEmpty,
-  P_Value_Hyp1,
-  NormalizedFractionDifference
-)]
-
-#############################################################
-# Plotting
-#############################################################
-
-sample_of_interest <- "UDN212054"
-gene_of_interest <- "HARS1"
-
-# Try this
-p_value_thresh <- 1
-masking_thresh <- 0.001
-
-# If the gene has a significant hypothesis 5 p-value in any of the controls, remove it.
-gene_significant_in_other_samples <- subset(wide_result, Sample != sample_of_interest & P_Value_Hyp5 < masking_thresh & (((proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo)) > 0))
-gene_significant_in_other_samples <- unique(gene_significant_in_other_samples$associated_gene)
-# Only include rows from merged_data_omim_added if the Isoform column doesn't contain a value that is present in the isoforms_significant_in_samples_other_than_UDN212054 character array
-wide_result_removed_common_bin_hypothesis <- subset(wide_result, !(associated_gene %in% gene_significant_in_other_samples))
-
-# If the gene has a significant hypothesis 1 p-value in ALL of the controls, remove it.
-# This would remove CD83 from UDN633333.
-# Subset to get only control samples, not including the sample of interest
-control_samples <- wide_result_removed_common_bin_hypothesis[Sample != sample_of_interest]
-# Check if all P_Values_Hyp1 for a gene in control samples are below the masking threshold
-gene_significant_in_all_controls_hyp1 <- control_samples[, .(AllSignificant = all(P_Value_Hyp1 < masking_thresh & NormalizedFractionDifference > 0)), by = .(associated_gene)]
-# Filter to keep only those where AllSignificant is TRUE
-significant_genes <- gene_significant_in_all_controls_hyp1[AllSignificant == TRUE, associated_gene]
-# Remove these genes from wide_result_sample
-wide_result_removed_common_bin_hypothesis_and_hyp1 <- wide_result_removed_common_bin_hypothesis[!associated_gene %in% significant_genes]
-
-# Filter only for sample of interest.
-wide_result_sample <- wide_result_removed_common_bin_hypothesis_and_hyp1[Sample == sample_of_interest]
-wide_result_sample <- wide_result_sample[!is.na(P_Value_Hyp5)]
-wide_result_sample <- wide_result_sample[P_Value_Hyp5 < p_value_thresh]
-
-# Replace 'gene_of_interest' with the name of the gene you want to label in the plot
-data <- as.data.frame(wide_result_sample)
-
-# Convert PhenotypesNotEmpty to a factor with specific labels
-data$PhenotypesNotEmpty <- factor(data$PhenotypesNotEmpty, levels = c("FALSE", "TRUE"), labels = c("No Phenotype", "Phenotype"))
-
-# Create the volcano plot with appropriate legend labels
-volcano_plot <- ggplot(data, aes(x = (proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo), y = -log10(P_Value_Hyp5), color = PhenotypesNotEmpty)) +
-  geom_point(alpha = 0.6, size = 1) +  # Color points based on PhenotypesNotEmpty
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlight gene of interest
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Significance threshold line
-  labs(x = "(proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo)", 
-       y = "-log10(P_Value_Hyp5)", 
-       title = paste(sample_of_interest, "p-value thresh=", p_value_thresh, " masking thresh=", masking_thresh)) +
-  scale_color_manual(values = c("No Phenotype" = "gray", "Phenotype" = "red")) +
-  theme_minimal() +
-  theme(legend.title = element_blank(),  # Optionally hide the legend title
-        axis.title.x = element_text(size = 7))
-
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  ) #+ ylim(0, 10)
+for (sample in samples) {
   
-
-# Print the plot
-# print(volcano_plot_with_label)
-title <- paste(sample_of_interest, "mask_with_hyp1", "p-value thresh=",p_value_thresh, " masking thresh=", masking_thresh,".pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-#############################################################
-# Plotting with smaller dt
-#############################################################
-
-#smaller_dt <- fread("Hyp5_gene_data_combined_filtered_0.1_BCH_UDN_4.21.24.csv")
-
-sample_of_interest <- "UDN633333"
-gene_of_interest <- "MFN2"
-
-# Try this
-p_value_thresh <- 1
-masking_thresh <- 0.00000001
-
-# If the gene has a significant hypothesis 5 p-value in any of the controls, remove it.
-gene_significant_in_other_samples <- subset(smaller_dt, Sample != sample_of_interest & P_Value_Hyp5 < masking_thresh & (((proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo)) > 0))
-gene_significant_in_other_samples <- unique(gene_significant_in_other_samples$associated_gene)
-wide_result_removed_common_bin_hypothesis <- subset(smaller_dt, !(associated_gene %in% gene_significant_in_other_samples))
-
-# ###########################################################################
-# # If the gene has a significant hypothesis 1 p-value in ALL of the controls, remove it.
-# # This would remove CD83 from UDN633333.
-# # Subset to get only control samples, not including the sample of interest
-# control_samples <- wide_result_removed_common_bin_hypothesis[Sample != sample_of_interest]
-# # Check if all P_Values_Hyp1 for a gene in control samples are below the masking threshold
-# gene_significant_in_all_controls_hyp1 <- control_samples[, .(AllSignificant = all(P_Value_Hyp1 < masking_thresh & NormalizedFractionDifference > 0)), by = .(associated_gene)]
-# # Filter to keep only those where AllSignificant is TRUE
-# significant_genes <- gene_significant_in_all_controls_hyp1[AllSignificant == TRUE, associated_gene]
-# # Remove these genes from wide_result_sample
-# wide_result_removed_common_bin_hypothesis_and_hyp1 <- wide_result_removed_common_bin_hypothesis[!associated_gene %in% significant_genes]
-# ###########################################################################
-
-###########################################################################
-# If the gene has a significant hypothesis 1 p-value in HALF of the controls, remove it.
-# Subset to get only control samples, not including the sample of interest
-control_samples <- wide_result_removed_common_bin_hypothesis[Sample != sample_of_interest]
-
-# Check the proportion of controls where P_Values_Hyp1 for a gene are below the masking threshold and NormalizedFractionDifference > 0
-gene_significant_in_half_controls_hyp1 <- control_samples[, .(
-  ProportionSignificant = sum(P_Value_Hyp1 < masking_thresh & NormalizedFractionDifference > 0) / .N
-), by = .(associated_gene)]
-
-# Filter to keep only those genes where ProportionSignificant is greater than or equal to 0.5
-significant_genes <- gene_significant_in_half_controls_hyp1[ProportionSignificant >= hyp1_sig_proportion_masking_threshold, associated_gene]
-
-# Remove these genes from wide_result_sample
-wide_result_removed_common_bin_hypothesis_and_hyp1 <- wide_result_removed_common_bin_hypothesis[!associated_gene %in% significant_genes]
-###########################################################################
-
-# Filter only for sample of interest.
-wide_result_sample <- wide_result_removed_common_bin_hypothesis_and_hyp1[Sample == sample_of_interest]
-wide_result_sample <- wide_result_sample[!is.na(P_Value_Hyp5)]
-wide_result_sample <- wide_result_sample[P_Value_Hyp5 < p_value_thresh]
-
-# Replace 'gene_of_interest' with the name of the gene you want to label in the plot
-data <- as.data.frame(wide_result_sample)
-
-# Convert PhenotypesNotEmpty to a factor with specific labels
-data$PhenotypesNotEmpty <- factor(data$PhenotypesNotEmpty, levels = c("FALSE", "TRUE"), labels = c("No Phenotype", "Phenotype"))
-
-# Create the volcano plot with appropriate legend labels
-volcano_plot <- ggplot(data, aes(x = (proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo), y = -log10(P_Value_Hyp5), color = PhenotypesNotEmpty)) +
-  geom_point(alpha = 0.6, size = 1) +  # Color points based on PhenotypesNotEmpty
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlight gene of interest
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Significance threshold line
-  labs(x = "(proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo)", 
-       y = "-log10(P_Value_Hyp5)", 
-       title = paste(sample_of_interest, "p-value thresh=", p_value_thresh, " masking thresh=", masking_thresh)) +
-  scale_color_manual(values = c("No Phenotype" = "gray", "Phenotype" = "red")) +
-  theme_minimal() +
-  theme(legend.title = element_blank(),  # Optionally hide the legend title
-        axis.title.x = element_text(size = 7))
-
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  ) #+ ylim(0, 10)
-
-
-# Print the plot
-# print(volcano_plot_with_label)
-title <- paste(sample_of_interest, "mask_with_hyp1", "p-value thresh=",p_value_thresh, " masking thresh=", masking_thresh,".pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+  print(sample)
+  
+  # Filter current sample data
+  sample_data <- wide_result[Sample == sample]
+  
+  # Filter control data (all samples except the current one)
+  control_data <- wide_result[Sample != sample]
+  
+  # Find isoforms significant in the sample but not in controls. One sided significance.
+  significant_isoforms <- sample_data[P_Value_Hyp1 < significance_threshold & Cyclo_TPM > Noncyclo_TPM]
+  
+  
+  # Filter isoforms that are non-significant across all controls
+  # isoforms_non_significant_in_controls <- control_data[, .(MinPValue = min(P_Value_Hyp1, na.rm = TRUE)), by = .(Isoform_PBid)
+  #                                                      ][MinPValue > masking_threshold, .(Isoform_PBid)]
+  
+  # Filter isoforms that are non-significant across all controls. One sided significance.
+  # na.rm because nan values are reported as minimum even though they should be considered the same as 
+  # a p-value of 1.
+  # Cyclo_TPM > Noncyclo_TPM.
+  isoforms_significant_in_controls <- control_data[
+    Cyclo_TPM > Noncyclo_TPM, 
+    .(MinPValue = min(P_Value_Hyp1, na.rm = TRUE)), 
+    by = .(Isoform_PBid)
+  ][MinPValue < masking_threshold, .(Isoform_PBid)]
+  
+  
+  # To remove isoforms significant in controls from significant_isoforms, perform an anti-join
+  # This uses the `data.table` syntax for anti-join: `!in`
+  top_isoforms <- significant_isoforms[!Isoform_PBid %in% isoforms_significant_in_controls$Isoform_PBid]
+  
+  
+  # Sort top_isoforms by P_Value_Hyp1. Ascending order.
+  top_isoforms <- top_isoforms[order(P_Value_Hyp1)]
+  
+  # Store in the list with the sample name as the list name
+  # top_isoforms_list[[sample]] <- top_isoforms
+  
+  # Create a filename using the sample name
+  filename <- paste0("Hyp5_Top_Isoforms_", sample, ".csv")
+  
+  # Write the data.table to a CSV file
+  fwrite(top_isoforms, file = filename)
+  
+  rm(sample_data)
+  rm(control_data)
+  rm(significant_isoforms)
+  rm(isoforms_significant_in_controls)
+  rm(top_isoforms)
+  
+}
