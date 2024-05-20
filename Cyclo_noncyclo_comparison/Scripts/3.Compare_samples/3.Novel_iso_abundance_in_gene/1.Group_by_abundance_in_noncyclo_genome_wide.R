@@ -15,7 +15,7 @@ library(stats) # For chisq.test
 library(testthat)
 
 # Step 1: Read the CSV file
-dt <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/3.Comparison_between_samples/Isoform/data_combined_full.csv")
+dt_isoform_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/3.Comparison_between_samples/Isoform/data_combined_full.csv")
 dt_gene_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/3.Comparison_between_samples/Gene/data_combined_full.csv")
 
 omim_file <- "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/3.15.24_merge_aligned_bams/4.Comparison_between_samples/Combined_OMIM_Isoform_4.3.24/genemap2_7.21.23.txt"
@@ -32,7 +32,7 @@ bin_proportion <- 0.005
 #This is because 0/0 = NaN. So if a gene has 0 counts,
 #then the denominator is 0. Take this into account by replacing
 #NA with zero.
-dt[is.na(isoform_noncyclo_proportion), isoform_noncyclo_proportion := 0]
+dt_isoform_level[is.na(isoform_noncyclo_proportion), isoform_noncyclo_proportion := 0]
 
 # isoforms that are not seen at all in the noncyclo sample are removed.
 # If this is commented out then isoforms that are not seen at all in the noncyclo sample (but are seen in the cyclo sample) are considered low abundance isoforms
@@ -40,11 +40,11 @@ dt[is.na(isoform_noncyclo_proportion), isoform_noncyclo_proportion := 0]
 
 # isoforms that are not seen at all in the noncyclo sample (but are seen in the cyclo sample) are considered low abundance isoforms
 # Step 2: Create a new column for binning for all genes
-dt[, bin := ifelse(isoform_noncyclo_proportion <= bin_proportion, "Bin1_le", "Bin2_g")]
+dt_isoform_level[, bin := ifelse(isoform_noncyclo_proportion <= bin_proportion, "Bin1_le", "Bin2_g")]
 
 
 # Step 3: Aggregate the Cyclo_TPM and Noncyclo_TPM, and list Isoform_PBid for each sample and gene
-result <- dt[, .(Isoforms = list(Isoform_PBid),
+result <- dt_isoform_level[, .(Isoforms = list(Isoform_PBid),
                  Total_bin_cyclo_count = sum(cyclo_count),
                  Total_bin_noncyclo_count = sum(noncyclo_count)),
              by = .(Sample, associated_gene, bin)]
