@@ -30,6 +30,13 @@ bin_proportion <- 0.005
 significance_threshold <- 0.01
 masking_threshold <- 0.00000001
 
+
+#############################################################
+# Perform bin calculations
+#############################################################
+
+print(paste("Starting bin calculations at:", Sys.time()))
+
 #isoform_noncyclo_proportion can have a value of NaN
 #This is because 0/0 = NaN. So if a gene has 0 counts,
 #then the denominator is 0. Take this into account by replacing
@@ -66,6 +73,16 @@ wide_result[is.na(Total_bin_noncyclo_count_Bin2_g), Total_bin_noncyclo_count_Bin
 wide_result[is.na(Total_bin_cyclo_count_Bin1_le), Total_bin_cyclo_count_Bin1_le := 0]
 wide_result[is.na(Total_bin_noncyclo_count_Bin1_le), Total_bin_noncyclo_count_Bin1_le := 0]
 
+print(paste("Finished bin calculations at:", Sys.time()))
+
+
+#############################################################
+# Perform chi-square
+#############################################################
+
+print(paste("Starting chi-square calculations at:", Sys.time()))
+
+# Potential future work: Add parallelization.
 
 # Step 5: Apply the chi-square test for each Sample and gene
 wide_result[, c("p_value") := {
@@ -85,10 +102,14 @@ setnames(wide_result, "p_value", "P_Value_Hyp5")
 wide_result[, proportion_in_Bin1_cyclo := Total_bin_cyclo_count_Bin1_le / (Total_bin_cyclo_count_Bin2_g + Total_bin_cyclo_count_Bin1_le)]
 wide_result[, proportion_in_Bin1_noncyclo := Total_bin_noncyclo_count_Bin1_le / (Total_bin_noncyclo_count_Bin2_g + Total_bin_noncyclo_count_Bin1_le)]
 
+print(paste("Finished chi-square calculations at:", Sys.time()))
 
 #############################################################
 # Add all the columns from dt_gene_level
 #############################################################
+
+print(paste("Started add dt_gene_level columns at:", Sys.time()))
+
 
 setDT(wide_result)
 
@@ -115,9 +136,15 @@ filename <- paste0("data_combined_full_gene_with_Hyp5.csv")
 # Write the data.table to a CSV file
 fwrite(wide_result, file = filename)
 
+print(paste("Finished adding dt_gene_level columns at:", Sys.time()))
+
+
 #######################################################################
 # Top genes based on Hyp5 p-values.
 #######################################################################
+
+print(paste("Started filtering for top genes at:", Sys.time()))
+
 
 # Get a vector of unique samples
 samples <- unique(wide_result$Sample)
@@ -175,6 +202,8 @@ for (sample in samples) {
   rm(top_isoforms)
   
 }
+
+print(paste("Finished filtering for top genes at:", Sys.time()))
 
 #######################################################################
 # Unit tests
