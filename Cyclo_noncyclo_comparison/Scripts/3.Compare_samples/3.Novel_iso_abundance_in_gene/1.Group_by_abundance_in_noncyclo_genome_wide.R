@@ -135,7 +135,7 @@ print(paste("Started add dt_gene_level columns at:", Sys.time()))
 
 setDT(wide_result)
 
-names(dt_gene_level)[names(dt_gene_level) == "Isoform_PBid"] <- "associated_gene"
+#names(dt_gene_level)[names(dt_gene_level) == "Isoform_PBid"] <- "associated_gene"
 
 # Step 1: Identify the columns in dt_gene_level not in wide_result
 unique_columns <- setdiff(names(dt_gene_level), names(wide_result))
