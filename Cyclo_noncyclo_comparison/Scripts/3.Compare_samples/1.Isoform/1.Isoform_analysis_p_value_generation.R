@@ -518,6 +518,8 @@ if(!gene_level){
     select(-ends_with(".nonzero")) # Remove the temporary non-zero columns
   
   print(paste("Finished adding pigeon annotations at:", Sys.time()))
+
+  rm(non_zero_rows)
   
 }
 
@@ -698,7 +700,7 @@ data_combined_full[, `:=` (
 print(paste("Finished adding total sums, TPM, etc. at:", Sys.time()))
 
 rm(isoform_averages)
-rm(median_TPM)
+rm(median_tpm)
 
 
 
@@ -750,8 +752,6 @@ filename <- paste0("data_combined_full.csv")
 fwrite(data_combined_full, file = filename)
 
 print(paste("Finished adding omim info at:", Sys.time()))
-
-rm(omim_data)
 
 
 #######################################################################
@@ -817,6 +817,13 @@ for (sample in samples) {
   
   # Write the data.table to a CSV file
   fwrite(top_isoforms, file = filename)
+
+  rm(sample_data)
+  rm(control_data)
+  rm(significant_isoforms)
+  rm(isoforms_significant_in_controls)
+  rm(top_isoforms)
+
 }
 
 
@@ -854,6 +861,7 @@ for (sample in samples) {
   filename <- paste0("Hyp2_below_median_Top_Isoforms_", sample, ".csv")
   # Write the data.table to a CSV file
   fwrite(significant_isoforms_Hyp2_below_median, file = filename)
+  rm(significant_isoforms_Hyp2_below_median)
   
   # Find isoforms significant in the sample
   significant_isoforms_Hyp2_above_median <- sample_data[Max_P_Value_Hyp2_above_median < significance_threshold]
@@ -863,6 +871,7 @@ for (sample in samples) {
   filename <- paste0("Hyp2_above_median_Top_Isoforms_", sample, ".csv")
   # Write the data.table to a CSV file
   fwrite(significant_isoforms_Hyp2_above_median, file = filename)
+  rm(significant_isoforms_Hyp2_above_median)
   
   # Find isoforms significant in the sample
   significant_isoforms_Hyp3_below_median <- sample_data[Max_P_Value_Hyp3_below_median < significance_threshold]
@@ -872,6 +881,7 @@ for (sample in samples) {
   filename <- paste0("Hyp3_below_median_Top_Isoforms_", sample, ".csv")
   # Write the data.table to a CSV file
   fwrite(significant_isoforms_Hyp3_below_median, file = filename)
+  rm(significant_isoforms_Hyp3_below_median)
   
   # Find isoforms significant in the sample
   significant_isoforms_Hyp3_above_median <- sample_data[Max_P_Value_Hyp3_above_median < significance_threshold]
@@ -881,6 +891,9 @@ for (sample in samples) {
   filename <- paste0("Hyp3_above_median_Top_Isoforms_", sample, ".csv")
   # Write the data.table to a CSV file
   fwrite(significant_isoforms_Hyp3_above_median, file = filename)
+  rm(significant_isoforms_Hyp3_above_median)
+
+  rm(sample_data)
   
 }
 

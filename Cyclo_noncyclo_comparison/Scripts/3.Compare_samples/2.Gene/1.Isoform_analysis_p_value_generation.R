@@ -5,9 +5,6 @@
 start_time <- Sys.time()
 print(paste("Start time:", start_time))
 
-# setwd("~/2022-2023/Research/Computational/Isoform counting/Per_isoform_analysis/4.28.24_Comparison/Isoseq_comparison_cyclo_vs_noncyclo_4.28.24/Isoform")
-
-# Major improvements: 1. row operations, 2. data tables, 3. chunking and parallel processing. 
 # Usage: 
 # conda activate r_env_per_isoform
 # Rscript 1.Isoform_analysis_p_value_generation.R > 1.Isoform_analysis_p_value_generation_output.txt 2>&1
@@ -24,14 +21,14 @@ library(testthat)
 
 
 # Read in sample information
-sample_info <- read.delim("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/Sample_names_and_bam_locations.tsv", header = TRUE, sep = "\t")
+sample_info <- read.delim("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/Sample_names_and_bam_locations.tsv", header = TRUE, sep = "\t")
 sample_info_unique <- distinct(sample_info, collapsed_by_isoform_file_cyclo_noncyclo_counts_classified, .keep_all = TRUE)
 
 # Read in omim data
 omim_file <- "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/3.15.24_merge_aligned_bams/4.Comparison_between_samples/Combined_OMIM_Isoform_4.3.24/genemap2_7.21.23.txt"
 
-# Gene-level.
-gene_level <- FALSE
+# Specify gene-level or isoform level.
+gene_level <- TRUE
 
 # Set thresholds
 significance_threshold <- 0.01
@@ -521,6 +518,8 @@ if(!gene_level){
     select(-ends_with(".nonzero")) # Remove the temporary non-zero columns
   
   print(paste("Finished adding pigeon annotations at:", Sys.time()))
+
+  rm(non_zero_rows)
   
 }
 
@@ -535,104 +534,13 @@ data_combined_full <- merge(data_combined_full, as.data.frame(results_hypothesis
 
 print(paste("Finished adding hypothesis 1 p-values at:", Sys.time()))
 
-#######################################################################
-# Add hypothesis 2 and 3 combined fisher p-value
-#######################################################################
-# 
-# print(paste("Started adding hypothesis 2 and 3 combined fisher p-values at:", Sys.time()))
-# 
-# # Assuming results_hypothesis_2 and results_hypothesis_3 are already data.tables
-# setDT(results_hypothesis_2)
-# setDT(results_hypothesis_3)
-# setDT(data_combined_full)
-# 
-# fisher_combined_test <- function(p_values) {
-#   # Remove entries containing the word "TPM". This is to remove rows
-#   # where the p-value was not calculated because it didn't fulfill the above or below
-#   # median requirement. 
-#   p_values_cleaned <- p_values[!grepl("TPM", p_values)]
-#   
-#   # Convert all remaining values to numeric, converting non-convertibles to NA
-#   valid_p_values <- as.numeric(p_values_cleaned)
-# 
-#   # Check if there are any valid p-values left
-#   if (length(valid_p_values) == 0) {
-#     # Return NA or some other indication that calculation cannot be performed
-#     return(NA_real_)
-#   }
-#   
-#   # Perform Fisher's method on valid p-values
-#   fisher_statistic <- -2 * sum(log(valid_p_values))
-#   p_value <- pchisq(fisher_statistic, df = 2 * length(valid_p_values), lower.tail = FALSE)
-#   return(p_value)
-# }
-# 
-# # Function to calculate Fisher's Combined Probability Test
-# # Keep na p-values, because na p-values arise when there is comparison of 0 to 0 
-# #fisher_combined_test <- function(p_values) {
-# # fisher_statistic <- -2 * sum(log(p_values))
-# # p_value <- pchisq(fisher_statistic, df = 2 * length(p_values), lower.tail = FALSE)
-# # return(p_value)
-# #}
-# 
-# # fisher_combined_test <- function(p_values) {
-# #   valid_p_values <- log(p_values[!is.na(p_values)])  # Exclude NA values before logging
-# #   fisher_statistic <- -2 * sum(valid_p_values)
-# #   df <- 2 * length(valid_p_values)  # Correct df based on non-NA p-values
-# #   p_value <- pchisq(fisher_statistic, df, lower.tail = FALSE)
-# #   return(p_value)
-# # }
-# 
-# # Hypothesis 2 below median
-# # First, ensure Sample1 and Sample2 are in a long format for easier grouping
-# results_long_hyp2_below_median <- melt(results_hypothesis_2, id.vars = c("Isoform_PBid", "P_Value_Hyp2_below_median"), measure.vars = c("Sample1", "Sample2"), value.name = "Sample")
-# # Now, calculate Fisher's P-value for each Isoform_PBid and Sample
-# results_fisher_hyp2_below_median <- results_long_hyp2_below_median[, .(Fisher_P_Value_Hyp2_below_median = fisher_combined_test(P_Value_Hyp2_below_median)), by = .(Isoform_PBid, Sample)]
-# # Since results_fisher contains Fisher_P_Value_Hyp2 for each Isoform_PBid and Sample,
-# # decide on how you want to merge. If 'data_combined_full' has matching Isoform_PBid and Sample columns:
-# data_combined_full <- merge(data_combined_full, results_fisher_hyp2_below_median, by = c("Isoform_PBid", "Sample"), all.x = TRUE)
-# 
-# # Hypothesis 2 above median
-# # First, ensure Sample1 and Sample2 are in a long format for easier grouping
-# results_long_hyp2_above_median <- melt(results_hypothesis_2, id.vars = c("Isoform_PBid", "P_Value_Hyp2_above_median"), measure.vars = c("Sample1", "Sample2"), value.name = "Sample")
-# # Now, calculate Fisher's P-value for each Isoform_PBid and Sample
-# results_fisher_hyp2_above_median <- results_long_hyp2_above_median[, .(Fisher_P_Value_Hyp2_above_median = fisher_combined_test(P_Value_Hyp2_above_median)), by = .(Isoform_PBid, Sample)]
-# # Since results_fisher contains Fisher_P_Value_Hyp2 for each Isoform_PBid and Sample,
-# # decide on how you want to merge. If 'data_combined_full' has matching Isoform_PBid and Sample columns:
-# data_combined_full <- merge(data_combined_full, results_fisher_hyp2_above_median, by = c("Isoform_PBid", "Sample"), all.x = TRUE)
-# 
-# 
-# # Hypothesis 3 below median
-# # First, ensure Sample1 and Sample2 are in a long format for easier grouping
-# results_long_hyp3_below_median <- melt(results_hypothesis_3, id.vars = c("Isoform_PBid", "P_Value_Hyp3_below_median"), measure.vars = c("Sample1", "Sample2"), value.name = "Sample")
-# # Now, calculate Fisher's P-value for each Isoform_PBid and Sample
-# results_fisher_hyp3_below_median <- results_long_hyp3_below_median[, .(Fisher_P_Value_Hyp3_below_median = fisher_combined_test(P_Value_Hyp3_below_median)), by = .(Isoform_PBid, Sample)]
-# # Since results_fisher contains Fisher_P_Value_Hyp2 for each Isoform_PBid and Sample,
-# # decide on how you want to merge. If 'data_combined_full' has matching Isoform_PBid and Sample columns:
-# data_combined_full <- merge(data_combined_full, results_fisher_hyp3_below_median, by = c("Isoform_PBid", "Sample"), all.x = TRUE)
-# 
-# # Hypothesis 3 above median
-# # First, ensure Sample1 and Sample2 are in a long format for easier grouping
-# results_long_hyp3_above_median <- melt(results_hypothesis_3, id.vars = c("Isoform_PBid", "P_Value_Hyp3_above_median"), measure.vars = c("Sample1", "Sample2"), value.name = "Sample")
-# # Now, calculate Fisher's P-value for each Isoform_PBid and Sample
-# results_fisher_hyp3_above_median <- results_long_hyp3_above_median[, .(Fisher_P_Value_Hyp3_above_median = fisher_combined_test(P_Value_Hyp3_above_median)), by = .(Isoform_PBid, Sample)]
-# # Since results_fisher contains Fisher_P_Value_Hyp2 for each Isoform_PBid and Sample,
-# # decide on how you want to merge. If 'data_combined_full' has matching Isoform_PBid and Sample columns:
-# data_combined_full <- merge(data_combined_full, results_fisher_hyp3_above_median, by = c("Isoform_PBid", "Sample"), all.x = TRUE)
-# 
-# print(paste("Finished adding hypothesis 2 and 3 combined fisher p-values at:", Sys.time()))
-# 
-# rm(results_fisher_hyp2)
-# rm(results_fisher_hyp3)
-# #rm(results_hypothesis_1)
-# #rm(results_hypothesis_2)
-# #rm(results_hypothesis_3)
+rm(results_hypothesis_1)
 
 #######################################################################
 # Add hypotheis 2 and 3 worst p-value
 #######################################################################
 
-print(paste("Started adding hypothesis 2 and 3 max fisher p-values at:", Sys.time()))
+print(paste("Started adding hypothesis 2 and 3 worst p-values at:", Sys.time()))
 
 # Hypothesis 2 below median
 # First, ensure Sample1 and Sample2 are in a long format for easier grouping
@@ -691,6 +599,9 @@ for (col in columns_to_replace) {
 # NA means all the values are NA. Ex. The sample has a TPM that is above the median, but the column is the below median column.
 
 print(paste("Finished adding hypothesis 2 and 3 max fisher p-values at:", Sys.time()))
+
+rm(results_hypothesis_2)
+rm(results_hypothesis_3)
 
 rm(results_max_hyp2_above_median)
 rm(results_max_hyp2_below_median)
@@ -789,51 +700,9 @@ data_combined_full[, `:=` (
 print(paste("Finished adding total sums, TPM, etc. at:", Sys.time()))
 
 rm(isoform_averages)
+rm(median_tpm)
 
-#######################################################################
-# Add hypothesis 4 p-values
-#######################################################################
 
-# Only perform if analysis is at isoform level
-if(!gene_level){
-  # Is the proportion of reads by the isoform in the gene different between cyclo vs noncyclo.
-  
-  print(paste("Starting hypothesis 4 p-value calculations at:", Sys.time()))
-  
-  # Setup parallel backend
-  no_cores <- detectCores() - 1
-  cl <- makeCluster(no_cores)
-  registerDoParallel(cl)
-  
-  # Calculate chunk size and split data into chunks
-  chunk_size <- ceiling(nrow(data_combined_full) / no_cores)
-  chunks <- split(data_combined_full, (seq_len(nrow(data_combined_full)) - 1) %/% chunk_size + 1)
-  
-  
-  # Parallel computation of p-values for each chunk
-  p_values_list <- foreach(chunk = chunks, .packages = c("data.table", "stats")) %dopar% {
-    chunk[, P_Value_Hyp4 := mapply(function(cyclo_count, gene_cyclo_total, noncyclo_count, gene_noncyclo_total) {
-      # Check if all counts are zero
-      if (cyclo_count + gene_cyclo_total + noncyclo_count + gene_noncyclo_total == 0) {
-        return(NA)  # Return NA (or another value that indicates this condition) if all counts are zero
-      } else {
-        # Proceed with the chi-squared test if not all counts are zero
-        return(chisq.test(matrix(c(cyclo_count, gene_cyclo_total - cyclo_count, noncyclo_count, gene_noncyclo_total - noncyclo_count), nrow = 2))$p.value)
-      }
-    }, cyclo_count, gene_cyclo_total, noncyclo_count, gene_noncyclo_total, SIMPLIFY = TRUE)]
-    
-    return(chunk)
-  }
-  
-  # Combine chunks back into the full dataset
-  data_combined_full <- rbindlist(p_values_list)
-  
-  # Stop the cluster
-  stopCluster(cl)
-  
-  print(paste("Finished hypothesis 4 p-value calculations at:", Sys.time()))
-  
-}
 
 #######################################################################
 # Add OMIM info
@@ -941,23 +810,30 @@ for (sample in samples) {
   top_isoforms <- top_isoforms[order(P_Value_Hyp1)]
   
   # Store in the list with the sample name as the list name
-  top_isoforms_list[[sample]] <- top_isoforms
+  # top_isoforms_list[[sample]] <- top_isoforms
   
   # Create a filename using the sample name
   filename <- paste0("Hyp1_Top_Isoforms_", sample, ".csv")
   
   # Write the data.table to a CSV file
   fwrite(top_isoforms, file = filename)
+
+  rm(sample_data)
+  rm(control_data)
+  rm(significant_isoforms)
+  rm(isoforms_significant_in_controls)
+  rm(top_isoforms)
+
 }
 
 
 # Combine all results into one data.table
-top_isoforms_combined <- rbindlist(top_isoforms_list, idcol = "Sample")
+# top_isoforms_combined <- rbindlist(top_isoforms_list, idcol = "Sample")
 
 # Create a filename using the sample name
-filename <- paste0("Hyp1_Top_Isoforms_Combined.csv")
+# filename <- paste0("Hyp1_Top_Isoforms_Combined.csv")
 # Write the data.table to a CSV file
-fwrite(top_isoforms_combined, file = filename)
+# fwrite(top_isoforms_combined, file = filename)
 
 print(paste("Finished finding top isoforms based on Hyp1 at:", Sys.time()))
 
@@ -985,6 +861,7 @@ for (sample in samples) {
   filename <- paste0("Hyp2_below_median_Top_Isoforms_", sample, ".csv")
   # Write the data.table to a CSV file
   fwrite(significant_isoforms_Hyp2_below_median, file = filename)
+  rm(significant_isoforms_Hyp2_below_median)
   
   # Find isoforms significant in the sample
   significant_isoforms_Hyp2_above_median <- sample_data[Max_P_Value_Hyp2_above_median < significance_threshold]
@@ -994,6 +871,7 @@ for (sample in samples) {
   filename <- paste0("Hyp2_above_median_Top_Isoforms_", sample, ".csv")
   # Write the data.table to a CSV file
   fwrite(significant_isoforms_Hyp2_above_median, file = filename)
+  rm(significant_isoforms_Hyp2_above_median)
   
   # Find isoforms significant in the sample
   significant_isoforms_Hyp3_below_median <- sample_data[Max_P_Value_Hyp3_below_median < significance_threshold]
@@ -1003,6 +881,7 @@ for (sample in samples) {
   filename <- paste0("Hyp3_below_median_Top_Isoforms_", sample, ".csv")
   # Write the data.table to a CSV file
   fwrite(significant_isoforms_Hyp3_below_median, file = filename)
+  rm(significant_isoforms_Hyp3_below_median)
   
   # Find isoforms significant in the sample
   significant_isoforms_Hyp3_above_median <- sample_data[Max_P_Value_Hyp3_above_median < significance_threshold]
@@ -1012,6 +891,9 @@ for (sample in samples) {
   filename <- paste0("Hyp3_above_median_Top_Isoforms_", sample, ".csv")
   # Write the data.table to a CSV file
   fwrite(significant_isoforms_Hyp3_above_median, file = filename)
+  rm(significant_isoforms_Hyp3_above_median)
+
+  rm(sample_data)
   
 }
 
@@ -1026,78 +908,6 @@ for (sample in samples) {
 
 print(paste("Finished finding top isoforms based on Hyp2 and Hyp3 at:", Sys.time()))
 
-#######################################################################
-# Top isoforms based on hypothesis 4
-#######################################################################
-
-# Only perform if doing isoform-level analysis
-if(!gene_level){
-  
-  print(paste("Started finding top isoforms based on Hyp4 at:", Sys.time()))
-  
-  # Hypothesis 4. Using controls. Mask.
-  # If hypothesis 4 is not significant in controls AND is significant in the sample AND cycloTPM > noncycloTPM. 
-  # Initialize an empty list to store results for each sample
-  top_isoforms_list <- list()
-  
-  # Get a vector of unique samples
-  samples <- unique(data_combined_full$Sample)
-  
-  for (sample in samples) {
-    
-    print(sample)
-    
-    # Filter current sample data
-    sample_data <- data_combined_full[Sample == sample]
-    
-    # Filter control data (all samples except the current one)
-    control_data <- data_combined_full[Sample != sample]
-    
-    # Find isoforms significant in the sample but not in controls. One sided significance.
-    significant_isoforms <- sample_data[P_Value_Hyp4 < significance_threshold & isoform_cyclo_proportion > isoform_noncyclo_proportion]
-    
-    
-    # Filter isoforms that are non-significant across all controls
-    # isoforms_non_significant_in_controls <- control_data[, .(MinPValue = min(P_Value_Hyp1, na.rm = TRUE)), by = .(Isoform_PBid)
-    #                                                      ][MinPValue > masking_threshold, .(Isoform_PBid)]
-    
-    # Filter isoforms that are significant for any controls. One sided significance.
-    # na.rm is true because nan values are reported as minimum even though they should be considered the same as 
-    # a p-value of 1. If cyclo or noncyclo has counts, then there should not be nan, so it's okay to rm. 
-    isoforms_significant_in_controls <- control_data[
-      Cyclo_TPM > Noncyclo_TPM, 
-      .(MinPValue = min(P_Value_Hyp4, na.rm = TRUE)), 
-      by = .(Isoform_PBid)
-    ][MinPValue < masking_threshold, .(Isoform_PBid)]
-    
-    # To remove isoforms significant in controls from significant_isoforms, perform an anti-join
-    # This uses the `data.table` syntax for anti-join: `!in`
-    top_isoforms <- significant_isoforms[!Isoform_PBid %in% isoforms_significant_in_controls$Isoform_PBid]
-    
-    # Sort top_isoforms by P_Value_Hyp1. Ascending order.
-    top_isoforms <- top_isoforms[order(P_Value_Hyp4)]
-    
-    # Store in the list with the sample name as the list name
-    top_isoforms_list[[sample]] <- top_isoforms
-    
-    # Create a filename using the sample name
-    filename <- paste0("Hyp4_Top_Isoforms_", sample, ".csv")
-    
-    # Write the data.table to a CSV file
-    fwrite(top_isoforms, file = filename)
-  }
-  
-  
-  # Combine all results into one data.table
-  top_isoforms_combined <- rbindlist(top_isoforms_list, idcol = "Sample")
-  
-  # Create a filename using the sample name
-  filename <- paste0("Hyp4_Top_Isoforms_Combined.csv")
-  # Write the data.table to a CSV file
-  fwrite(top_isoforms_combined, file = filename)
-  
-  print(paste("Finished finding top isoforms based on Hyp4 at:", Sys.time()))
-}
 
 #######################################################################
 # Unit tests.
