@@ -3,7 +3,7 @@
 
 # Usage: 
 # conda activate r_env_per_isoform
-# Rscript Group_by_abundance_in_noncyclo_genome_wide.R > Group_by_abundance_in_noncyclo_genome_wide_output.txt 2>&1
+# Rscript 1.Group_by_abundance_in_noncyclo_genome_wide.R > 1.Group_by_abundance_in_noncyclo_genome_wide_output.txt 2>&1
 
 # Load necessary libraries
 library(dplyr)
@@ -15,8 +15,8 @@ library(stats) # For chisq.test
 library(testthat)
 
 # Step 1: Read the CSV file
-dt_isoform_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/3.Comparison_between_samples/Isoform/data_combined_full.csv")
-dt_gene_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/4.24.24_merge_aligned_bams/3.Comparison_between_samples/Gene/data_combined_full.csv")
+dt_isoform_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/1.Isoform/data_combined_full.csv")
+dt_gene_level <- fread("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/2.Gene/data_combined_full.csv")
 
 # Hyp1 masking proportion threshold
 # Use 10 if you want no masking
@@ -51,9 +51,12 @@ result <- dt_isoform_level[, .(Isoforms = list(Isoform_PBid),
                  Total_bin_noncyclo_count = sum(noncyclo_count)),
              by = .(Sample, associated_gene, bin)]
 
+rm(dt_isoform_level)
+
 # Step 4: Pivot the data to wide format
 wide_result <- dcast(result, Sample + associated_gene ~ bin, value.var = c("Total_bin_cyclo_count", "Total_bin_noncyclo_count"))
 
+rm(result)
 
 # Replace NA values with zero. NA values appear in the Total_bin_cyclo_count_Bin2_g and Total_bin_noncyclo_count_Bin2_g
 # bins if the gene has zero counts or happens to have no isoforms that make up more than 0.01 of the gene.
@@ -103,6 +106,8 @@ columns_to_merge <- c("Sample", "associated_gene", unique_columns)
 
 # Merge operation
 wide_result <- merge(wide_result, dt_gene_level[, ..columns_to_merge], by = c("Sample", "associated_gene"), all.x = TRUE)
+
+rm(dt_gene_level)
 
 # Create a filename using the sample name
 filename <- paste0("data_combined_full_gene_with_Hyp5.csv")
@@ -170,3 +175,29 @@ for (sample in samples) {
   rm(top_isoforms)
   
 }
+
+#######################################################################
+# Unit tests
+#######################################################################
+
+print("Unit test results:")
+
+# Unit tests on the final wide_result
+test_that("wide_result has the correct columns", {
+  expect_true(all(c("Sample", "associated_gene", "Total_bin_cyclo_count_Bin1_le", 
+                    "Total_bin_noncyclo_count_Bin1_le", "Total_bin_cyclo_count_Bin2_g", 
+                    "Total_bin_noncyclo_count_Bin2_g", "P_Value_Hyp5", 
+                    "proportion_in_Bin1_cyclo", "proportion_in_Bin1_noncyclo") %in% names(wide_result)))
+})
+
+test_that("no NA values in key columns of wide_result", {
+  key_columns <- c("Total_bin_cyclo_count_Bin1_le", "Total_bin_noncyclo_count_Bin1_le", 
+                   "Total_bin_cyclo_count_Bin2_g", "Total_bin_noncyclo_count_Bin2_g")
+  for(col in key_columns) {
+    expect_true(all(!is.na(wide_result[[col]])))
+  }
+})
+
+test_that("P_Value_Hyp5 are valid probabilities", {
+  expect_true(all(is.na(wide_result$P_Value_Hyp5) | wide_result$P_Value_Hyp5 >= 0 & wide_result$P_Value_Hyp5 <= 1))
+})
