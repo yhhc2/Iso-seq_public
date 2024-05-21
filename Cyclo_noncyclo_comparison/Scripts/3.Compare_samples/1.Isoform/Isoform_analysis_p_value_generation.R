@@ -36,6 +36,10 @@ library(doParallel)
 library(stats) # For chisq.test
 library(testthat)
 
+sample_info <- read.delim(sample_info_path, header = TRUE, sep = "\t")
+sample_info_unique <- distinct(sample_info, collapsed_by_isoform_file_cyclo_noncyclo_counts_classified, .keep_all = TRUE)
+
+
 # Load data for each sample
 sample_data_list <- lapply(1:nrow(sample_info_unique), function(i) {
   df <- read.table(sample_info_unique$collapsed_by_isoform_file_cyclo_noncyclo_counts_classified[i], 
