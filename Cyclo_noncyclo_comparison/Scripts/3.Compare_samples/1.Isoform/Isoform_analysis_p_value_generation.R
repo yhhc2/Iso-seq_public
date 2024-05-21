@@ -601,7 +601,7 @@ for (col in columns_to_replace) {
 # NaN means there was a (0,0) comparison to (0,0)
 # NA means all the values are NA. Ex. The sample has a TPM that is above the median, but the column is the below median column.
 
-print(paste("Finished adding hypothesis 2 and 3 max fisher p-values at:", Sys.time()))
+print(paste("Finished adding hypothesis 2 and 3 worst p-values at:", Sys.time()))
 
 rm(results_hypothesis_2)
 rm(results_hypothesis_3)
