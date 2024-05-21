@@ -36,24 +36,6 @@ library(doParallel)
 library(stats) # For chisq.test
 library(testthat)
 
-
-# Read in sample information
-sample_info <- read.delim("/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/Sample_names_and_bam_locations.tsv", header = TRUE, sep = "\t")
-sample_info_unique <- distinct(sample_info, collapsed_by_isoform_file_cyclo_noncyclo_counts_classified, .keep_all = TRUE)
-
-# Read in omim data
-omim_file <- "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/3.15.24_merge_aligned_bams/4.Comparison_between_samples/Combined_OMIM_Isoform_4.3.24/genemap2_7.21.23.txt"
-
-# Specify gene-level or isoform level.
-gene_level <- FALSE
-
-# Set thresholds
-significance_threshold <- 0.01
-masking_threshold <- 0.01
-
-# Count threshold for removing isoforms for hyp2/3 statistics
-count_threshold <- 6
-
 # Load data for each sample
 sample_data_list <- lapply(1:nrow(sample_info_unique), function(i) {
   df <- read.table(sample_info_unique$collapsed_by_isoform_file_cyclo_noncyclo_counts_classified[i], 

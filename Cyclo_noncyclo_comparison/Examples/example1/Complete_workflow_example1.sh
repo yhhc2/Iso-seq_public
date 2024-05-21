@@ -4,12 +4,17 @@
 
 # Usage bash Complete_workflow_example1.sh > Complete_workflow_example1.output.txt 2>&1
 
+source /mmfs1/gscratch/stergachislab/yhhc/tools/miniconda3/miniconda3/bin/activate
+
+conda activate r_env_per_isoform
+
+
 #########################################################
 # Define inputs
 #########################################################
 
 # Scripts:
-Split_read_stats_awk="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/Inputs/Sample_names_and_bam_locations.tsv"
+Split_read_stats_awk="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/1.Split_read_stats/Split_read_stats_awk.sh"
 Cyclo_noncyclo_comparison="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Cyclo_noncyclo_comparison.sh"
 Isoform_analysis_p_value_generation="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/1.Isoform/Isoform_analysis_p_value_generation.R"
 Group_by_abundance_in_noncyclo_genome_wide="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/3.Novel_iso_abundance_in_gene"
@@ -43,8 +48,8 @@ cd "$Split_read_stats"
 #    2>&1
 
 bash "$Split_read_stats_awk" \
-    $read_stat_file \
-    $sample_file \
+    "$read_stat_file" \
+    "$sample_file" \
     > output.txt \
     2>&1
 
@@ -66,11 +71,11 @@ cd "$Collapse_counts"
 #    2>&1
 
 bash "$Cyclo_noncyclo_comparison" \
-    $sample_file \
-    $Split_read_stats \
-    Results \
-    $classification_file \
-    $helper_script \
+    "$sample_file" \
+    "$Split_read_stats" \
+    "${Collapse_counts}/Results" \
+    "$classification_file" \
+    "$helper_script" \
     > output.txt \
     2>&1
 
@@ -78,10 +83,6 @@ bash "$Cyclo_noncyclo_comparison" \
 #########################################################
 # 3.Compare_samples
 #########################################################
-
-source /mmfs1/gscratch/stergachislab/yhhc/tools/miniconda3/miniconda3/bin/activate
-
-conda activate r_env_per_isoform
 
 # 1.Isoform
 mkdir -p "$Compare_samples_Isoform"
@@ -96,8 +97,8 @@ cd "$Compare_samples_Isoform"
 #  <count_threshold>
 
 Rscript "$Isoform_analysis_p_value_generation" \
-  $sample_file \
-  $omim_file \
+  "$sample_file" \
+  "$omim_file" \
   FALSE \
   0.01 \
   0.01 \
@@ -119,8 +120,8 @@ cd "$Compare_samples_Gene"
 #  <count_threshold>
 
 Rscript "$Isoform_analysis_p_value_generation" \
-  $sample_file \
-  $omim_file \
+  "$sample_file" \
+  "$omim_file" \
   TRUE \
   0.01 \
   0.01 \
@@ -143,8 +144,8 @@ cd "$Compare_samples_Novel_iso_abundance_in_gene"
 #  <masking_threshold>
 
 Rscript "$Group_by_abundance_in_noncyclo_genome_wide" \
-  "$Compare_samples_Isoform/data_combined_full.csv" \
-  "$Compare_samples_Gene/data_combined_full.csv" \
+  "${Compare_samples_Isoform}/data_combined_full.csv" \
+  "${Compare_samples_Gene}/data_combined_full.csv" \
   0.5 \
   0.005 \
   1 \
@@ -166,13 +167,13 @@ cd "$Compare_samples_PCA"
 
 # Isoform-level
 Rscript "$PCA" \
-  "$Compare_samples_Isoform/data_combined_full.csv" \
+  "${Compare_samples_Isoform}/data_combined_full.csv" \
   6 \
   "PCA_isoform_level.pdf"
 
 # Gene-level
 Rscript "$PCA" \
-  "$Compare_samples_Gene/data_combined_full.csv" \
+  "${Compare_samples_Gene}/data_combined_full.csv" \
   6 \
   "PCA_gene_level.pdf"
 
