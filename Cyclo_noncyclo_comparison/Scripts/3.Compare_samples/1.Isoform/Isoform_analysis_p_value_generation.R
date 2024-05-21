@@ -716,7 +716,7 @@ print(paste("Started adding omim info at:", Sys.time()))
 
 # some genes are not included when I read in the data for some reason. Like PDZK1
 # This is fixed by including the quote="" argument. https://www.biostars.org/p/221983/
-omim_data <- read.table(omim_file, header = TRUE, sep = "\t", check.names = FALSE, fill = TRUE, quote="")
+omim_data <- read.table(omim_file_path, header = TRUE, sep = "\t", check.names = FALSE, fill = TRUE, quote="")
 
 # Remove any rows where the approved gene symbol is empty. 
 omim_data <- omim_data %>%
