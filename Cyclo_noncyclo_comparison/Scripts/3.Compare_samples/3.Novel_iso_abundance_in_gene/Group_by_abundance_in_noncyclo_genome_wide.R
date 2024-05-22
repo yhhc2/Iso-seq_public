@@ -185,7 +185,7 @@ for (sample in samples) {
   ###############
   # Check the proportion of controls where P_Values_Hyp1 for a gene are below the masking threshold and NormalizedFractionDifference > 0
   gene_significant_in_controls_hyp1 <- control_data[, .(
-    ProportionSignificant = sum(P_Value_Hyp1 < masking_thresh & NormalizedFractionDifference > 0) / .N
+    ProportionSignificant = sum(P_Value_Hyp1 < masking_threshold & NormalizedFractionDifference > 0) / .N
   ), by = .(associated_gene)]
 
   # Filter to keep only those genes where ProportionSignificant is greater than or equal to 0.5
