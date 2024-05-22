@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# But do not ignore .R and .sh script files
+!*.R
+!*.sh
+!*gitignore
+
+# Include directories, to allow searching within them
+!**/
