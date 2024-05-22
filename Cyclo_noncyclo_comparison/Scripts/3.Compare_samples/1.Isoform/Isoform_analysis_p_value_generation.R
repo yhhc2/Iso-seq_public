@@ -226,7 +226,7 @@ p_values_list <- foreach(chunk = chunks, .packages = c("data.table", "stats")) %
   chunk[, P_Value_Hyp3_below_median := NA_character_]
   # Apply the chi-squared test only if CycloTPM1 and CycloTPM2 are below their respective MedianCycloTPM
   chunk[, P_Value_Hyp3_below_median := ifelse(
-    Cyclo_TPM1 < MedianCyclo_TPM1 & Cyclo_TPM2 < MedianCyclo_TPM1,
+    Cyclo_TPM1 =< MedianCyclo_TPM1 & Cyclo_TPM2 =< MedianCyclo_TPM1,
     mapply(function(cyclo_count1, TotalCyclo1, cyclo_count2, TotalCyclo2) {
       test_matrix <- matrix(c(cyclo_count1, TotalCyclo1, cyclo_count2, TotalCyclo2), nrow = 2)
       chisq.test(test_matrix)$p.value
@@ -238,7 +238,7 @@ p_values_list <- foreach(chunk = chunks, .packages = c("data.table", "stats")) %
   chunk[, P_Value_Hyp2_below_median := NA_character_]
   # Apply the chi-squared test conditionally based on NonCycloTPM values
   chunk[, P_Value_Hyp2_below_median := ifelse(
-    Noncyclo_TPM1 < MedianNoncyclo_TPM1 & Noncyclo_TPM2 < MedianNoncyclo_TPM1,
+    Noncyclo_TPM1 =< MedianNoncyclo_TPM1 & Noncyclo_TPM2 =< MedianNoncyclo_TPM1,
     mapply(function(noncyclo_count1, TotalNoncyclo1, noncyclo_count2, TotalNoncyclo2) {
       test_matrix <- matrix(c(noncyclo_count1, TotalNoncyclo1, noncyclo_count2, TotalNoncyclo2), nrow = 2)
       chisq.test(test_matrix)$p.value
@@ -253,7 +253,7 @@ p_values_list <- foreach(chunk = chunks, .packages = c("data.table", "stats")) %
   chunk[, P_Value_Hyp3_above_median := NA_character_]
   # Apply the chi-squared test only if CycloTPM1 and CycloTPM2 are below their respective MedianCycloTPM
   chunk[, P_Value_Hyp3_above_median := ifelse(
-    Cyclo_TPM1 > MedianCyclo_TPM1 & Cyclo_TPM2 > MedianCyclo_TPM1,
+    Cyclo_TPM1 >= MedianCyclo_TPM1 & Cyclo_TPM2 >= MedianCyclo_TPM1,
     mapply(function(cyclo_count1, TotalCyclo1, cyclo_count2, TotalCyclo2) {
       test_matrix <- matrix(c(cyclo_count1, TotalCyclo1, cyclo_count2, TotalCyclo2), nrow = 2)
       chisq.test(test_matrix)$p.value
@@ -265,7 +265,7 @@ p_values_list <- foreach(chunk = chunks, .packages = c("data.table", "stats")) %
   chunk[, P_Value_Hyp2_above_median := NA_character_]
   # Apply the chi-squared test conditionally based on NonCycloTPM values
   chunk[, P_Value_Hyp2_above_median := ifelse(
-    Noncyclo_TPM1 > MedianNoncyclo_TPM1 & Noncyclo_TPM2 > MedianNoncyclo_TPM1,
+    Noncyclo_TPM1 >= MedianNoncyclo_TPM1 & Noncyclo_TPM2 >= MedianNoncyclo_TPM1,
     mapply(function(noncyclo_count1, TotalNoncyclo1, noncyclo_count2, TotalNoncyclo2) {
       test_matrix <- matrix(c(noncyclo_count1, TotalNoncyclo1, noncyclo_count2, TotalNoncyclo2), nrow = 2)
       chisq.test(test_matrix)$p.value
