@@ -187,8 +187,8 @@ awk -F ' ' '
         data[$1] = $6 " " $7 " " $8 " " $15;
         next;
     }
-    # Process fileA and output to outputFile
-    FNR > 1 {
+    # Process fileA and output to outputFile. FileA should have no header, so process every line.
+    FNR > 0 {
         if ($1 in data) {
             print $1, $2, $3, data[$1];
         } else {
@@ -203,7 +203,7 @@ awk -F ' ' '
 
 # CHECK if the number of lines in the output is what we expect.
 expected_lines=$(wc -l < "$fileA")
-output_lines=$(wc -l < "$outputFile")
+output_lines=$(($(wc -l < "$outputFile") - 1)) #Subtract 1 because header is added to output file.
 # Output file should have header + same number of lines as input file
 if [ "$((output_lines))" -ne "$expected_lines" ]; then
     echo "Error: Number of lines in $outputFile does not match $fileA. Expected $expected_lines. Actual $output_lines."
@@ -233,11 +233,11 @@ DIRECTORY="."
 KEEP_FILE="collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt"
 
 # Find all files in the directory, excluding the specified file
-for file in "$DIRECTORY"/*; do
-    if [ "$(basename "$file")" != "$KEEP_FILE" ]; then
-        rm -f "$file"
-    fi
-done
+#for file in "$DIRECTORY"/*; do
+#    if [ "$(basename "$file")" != "$KEEP_FILE" ]; then
+#        rm -f "$file"
+#    fi
+#done
 
 
 ##########################################################################
