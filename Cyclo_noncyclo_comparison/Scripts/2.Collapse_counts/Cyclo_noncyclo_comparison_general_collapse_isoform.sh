@@ -233,11 +233,11 @@ DIRECTORY="."
 KEEP_FILE="collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt"
 
 # Find all files in the directory, excluding the specified file
-#for file in "$DIRECTORY"/*; do
-#    if [ "$(basename "$file")" != "$KEEP_FILE" ]; then
-#        rm -f "$file"
-#    fi
-#done
+for file in "$DIRECTORY"/*; do
+    if [ "$(basename "$file")" != "$KEEP_FILE" ]; then
+        rm -f "$file"
+    fi
+done
 
 
 ##########################################################################
