@@ -1,0 +1,17 @@
+sample	sample_date	sequence_type	sample_type	instrument	organism	cell_type	genome	project	id	cyclo_noncyclo	modified_readname_flnc_bam	clustered_and_aligned_bam	modified_readname_flnc_bam_tagged	collapsed_by_isoform_file_cyclo_noncyclo_counts_classified	modified_readname_flnc_aligned_bam
+PS1	9/21/2023	PacBio	cDNA	Revio	Human	Fibroblast	hg38	dummy	Dummy_1	cyclo	N/A	N/A	N/A	/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_1/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt	N/A
+PS2	9/21/2023	PacBio	cDNA	Revio	Human	Fibroblast	hg38	dummy	Dummy_1	noncyclo	N/A	N/A	N/A	/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_1/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt	N/A
+PS3	9/21/2023	PacBio	cDNA	Revio	Human	Fibroblast	hg38	dummy	Dummy_2	cyclo	N/A	N/A	N/A	/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_2/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt	N/A
+PS4	9/21/2023	PacBio	cDNA	Revio	Human	Fibroblast	hg38	dummy	Dummy_2	noncyclo	N/A	N/A	N/A	/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_2/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt	N/A
+PS5	9/27/2023	PacBio	cDNA	Revio	Human	Fibroblast	hg38	dummy	Dummy_3	cyclo	N/A	N/A	N/A	/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_3/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt	N/A
+PS6	9/27/2023	PacBio	cDNA	Revio	Human	Fibroblast	hg38	dummy	Dummy_3	noncyclo	N/A	N/A	N/A	/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_3/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt	N/A
+PS7	9/27/2023	PacBio	cDNA	Revio	Human	Fibroblast	hg38	dummy	Dummy_4	cyclo	N/A	N/A	N/A	/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_4/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt	N/A
+PS8	9/27/2023	PacBio	cDNA	Revio	Human	Fibroblast	hg38	dummy	Dummy_4	noncyclo	N/A	N/A	N/A	/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_4/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt	N/A
+															
+															
+															
+															
+															
+															
+															
+															
