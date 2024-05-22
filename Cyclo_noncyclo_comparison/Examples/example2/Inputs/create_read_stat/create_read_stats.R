@@ -14,9 +14,12 @@ writeLines("id pbid", file_conn)
 for (pbid in rownames(counts_matrix)) {
   for (ps in colnames(counts_matrix)) {
     count <- counts_matrix[pbid, ps]
-    for (i in 1:count) {
-      writeLines(sprintf("%s_smrt/zmw/ccs_readID\t%s", ps, pbid), file_conn)
+    if(count > 0){
+      for (i in 1:count) {
+        writeLines(sprintf("%s_smrt/zmw/ccs_readID\t%s", ps, pbid), file_conn)
+      }
     }
+    
   }
 }
 
