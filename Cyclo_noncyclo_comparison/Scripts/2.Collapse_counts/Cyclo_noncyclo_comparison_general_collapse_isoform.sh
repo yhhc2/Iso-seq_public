@@ -68,9 +68,7 @@ awk 'NR==1 && $7 == "associated_gene" {found=1; exit} END {if(found!=1) print "E
 
 # Need to first sort based on isoform ID.
 
-#remove header for read_stat file because it's not needed
-tail -n +2 $read_stat_file > read_stat_header_removed.txt
-sort -k3 read_stat_header_removed.txt > read_stat_sorted.txt
+sort -k3 $read_stat_file > read_stat_sorted.txt
 
 sort -k1 $classification_file > classification_sorted.txt
 
