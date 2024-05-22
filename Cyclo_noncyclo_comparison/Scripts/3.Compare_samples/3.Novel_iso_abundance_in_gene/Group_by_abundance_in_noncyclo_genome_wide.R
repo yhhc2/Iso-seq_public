@@ -24,8 +24,8 @@ if (length(args) != 6) {
 }
 
 # Assign variables from arguments
-dt_isoform_level <- args[1]
-dt_gene_level <- args[2]
+dt_isoform_level <- fread(args[1])
+dt_gene_level <- fread(args[2])
 hyp1_sig_proportion_masking_threshold <- as.numeric(args[3]) # Use 10 if you want no masking. Use 1 if you want masking only if hyp1 is sig in ALL controls
 bin_proportion <- as.numeric(args[4]) # Bin proportion for minor bin used in hypothesis 5
 significance_threshold <- as.numeric(args[5])

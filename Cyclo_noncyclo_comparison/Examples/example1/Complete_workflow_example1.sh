@@ -17,7 +17,7 @@ conda activate r_env_per_isoform
 Split_read_stats_awk="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/1.Split_read_stats/Split_read_stats_awk.sh"
 Cyclo_noncyclo_comparison="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Cyclo_noncyclo_comparison.sh"
 Isoform_analysis_p_value_generation="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/1.Isoform/Isoform_analysis_p_value_generation.R"
-Group_by_abundance_in_noncyclo_genome_wide="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/3.Novel_iso_abundance_in_gene"
+Group_by_abundance_in_noncyclo_genome_wide="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/3.Novel_iso_abundance_in_gene/Group_by_abundance_in_noncyclo_genome_wide.R"
 PCA="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/4.PCA/PCA.R"
 
 # Directories:
@@ -30,8 +30,8 @@ Compare_samples_PCA="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/
 
 # Input files:
 read_stat_file="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/6-collapsed/collapsed.read_stat.txt"
-sample_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/Inputs/Sample_names_and_bam_locations.tsv"
 classification_file="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/7-pigeon/pigeon_classification.txt"
+sample_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/Inputs/Sample_names_and_bam_locations.tsv"
 helper_script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Cyclo_noncyclo_comparison_general_collapse_isoform.sh"
 omim_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/3.15.24_merge_aligned_bams/4.Comparison_between_samples/Combined_OMIM_Isoform_4.3.24/genemap2_7.21.23.txt"
 
@@ -169,13 +169,19 @@ cd "$Compare_samples_PCA"
 Rscript "$PCA" \
   "${Compare_samples_Isoform}/data_combined_full.csv" \
   6 \
-  "PCA_isoform_level.pdf"
+  "PCA_isoform_level.pdf" \
+  > output_isoform.txt \
+  2>&1
+
 
 # Gene-level
 Rscript "$PCA" \
   "${Compare_samples_Gene}/data_combined_full.csv" \
   6 \
-  "PCA_gene_level.pdf"
+  "PCA_gene_level.pdf" \
+  > output_gene.txt \
+  2>&1
+
 
 
 
