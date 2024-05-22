@@ -37,8 +37,18 @@ library(stats) # For chisq.test
 library(testthat)
 
 sample_info <- read.delim(sample_info_path, header = TRUE, sep = "\t")
+
+# Function to check if all values in a row are NA or empty strings
+is_all_empty <- function(row) {
+  all(is.na(row) | row == "")
+}
+# Remove rows where all columns are NA or empty strings. Sometimes empty rows are added to the end by accident.
+# This will remove these empty rows.
+sample_info <- sample_info[!apply(sample_info, 1, is_all_empty), ]
+
 sample_info_unique <- distinct(sample_info, collapsed_by_isoform_file_cyclo_noncyclo_counts_classified, .keep_all = TRUE)
 
+print(sample_info_unique$collapsed_by_isoform_file_cyclo_noncyclo_counts_classified)
 
 # Load data for each sample
 sample_data_list <- lapply(1:nrow(sample_info_unique), function(i) {
