@@ -20,3 +20,5 @@ Cyclo_noncyclo_comparison/Examples/example2/Inputs/.Rhistory
 
 # Do not ignore readme file
 !README.md
+!README.rmd
+
