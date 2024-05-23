@@ -12,3 +12,4 @@
 # Do not ignore files in the example2 directory
 !Cyclo_noncyclo_comparison/Examples/example2/
 !Cyclo_noncyclo_comparison/Examples/example2/**
+Cyclo_noncyclo_comparison/Examples/example2/Inputs/.Rhistory
