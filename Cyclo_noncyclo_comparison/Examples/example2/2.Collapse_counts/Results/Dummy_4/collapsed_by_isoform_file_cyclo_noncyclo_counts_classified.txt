@@ -1,5 +1,6 @@
 Isoform_PBid cyclo_count noncyclo_count structural_category associated_gene associated_transcript subcategory
 PB.18 30 1000 novel_in_catalog GeneI novel combination_of_known_junctions
+PB.19 2000 0 novel_in_catalog GeneJ novel combination_of_known_junctions
 PB.3 50 50 novel_in_catalog GeneC novel combination_of_known_junctions
 PB.4 50 0 novel_in_catalog GeneD novel combination_of_known_junctions
 PB.5 10 10 novel_in_catalog GeneD novel combination_of_known_junctions

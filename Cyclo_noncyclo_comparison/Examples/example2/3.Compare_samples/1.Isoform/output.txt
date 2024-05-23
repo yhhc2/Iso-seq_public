@@ -1,4 +1,4 @@
-[1] "Start time: 2024-05-22 16:45:00.573588"
+[1] "Start time: 2024-05-22 20:42:47.755522"
 
 Attaching package: 'dplyr'
 
@@ -67,16 +67,16 @@ The following object is masked from 'package:dplyr':
 [2] "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_2/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt"
 [3] "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_3/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt"
 [4] "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_4/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt"
-[1] "Starting hypothesis 1 p-value calculations at: 2024-05-22 16:45:01.641621"
+[1] "Starting hypothesis 1 p-value calculations at: 2024-05-22 20:42:48.699212"
 [1] "Number of unique isoforms:"
-[1] 17
-[1] "Completed hypothesis 1 p-value calculations at: 2024-05-22 16:45:05.171093"
-[1] "Starting hypothesis 2 and 3 p-value calculations at: 2024-05-22 16:45:05.171764"
+[1] 18
+[1] "Completed hypothesis 1 p-value calculations at: 2024-05-22 20:42:50.28707"
+[1] "Starting hypothesis 2 and 3 p-value calculations at: 2024-05-22 20:42:50.287453"
 [1] "Number of isoforms to keep for hyp2/3 after filtering based on counts:"
-[1] 17
+[1] 18
 [1] "Number of comparisons:"
-[1] 102
-[1] "End time: 2024-05-22 16:45:09.466589"
+[1] 108
+[1] "End time: 2024-05-22 20:42:51.703671"
 [1] "Unit test results for p-value generation:"
 Test passed 
 Test passed 
@@ -88,32 +88,32 @@ Test passed
 Test passed 
 Test passed 
 Test passed 
-[1] "Starting adding pigeon annotations at: 2024-05-22 16:45:10.733608"
-[1] "Finished adding pigeon annotations at: 2024-05-22 16:45:10.763098"
-[1] "Started adding hypothesis 1 p-values at: 2024-05-22 16:45:10.763302"
-[1] "Finished adding hypothesis 1 p-values at: 2024-05-22 16:45:10.764653"
-[1] "Started adding hypothesis 2 and 3 worst p-values at: 2024-05-22 16:45:10.764826"
+[1] "Starting adding pigeon annotations at: 2024-05-22 20:42:52.640894"
+[1] "Finished adding pigeon annotations at: 2024-05-22 20:42:52.663383"
+[1] "Started adding hypothesis 1 p-values at: 2024-05-22 20:42:52.663586"
+[1] "Finished adding hypothesis 1 p-values at: 2024-05-22 20:42:52.664921"
+[1] "Started adding hypothesis 2 and 3 worst p-values at: 2024-05-22 20:42:52.665101"
 There were 15 warnings (use warnings() to see them)
 There were 11 warnings (use warnings() to see them)
-There were 25 warnings (use warnings() to see them)
-There were 16 warnings (use warnings() to see them)
-[1] "Finished adding hypothesis 2 and 3 worst p-values at: 2024-05-22 16:45:10.796784"
-[1] "Started adding total sums, TPM, etc. at: 2024-05-22 16:45:10.797301"
-[1] "Finished adding total sums, TPM, etc. at: 2024-05-22 16:45:10.818773"
-[1] "Started adding omim info at: 2024-05-22 16:45:10.818996"
-[1] "Finished adding omim info at: 2024-05-22 16:45:14.374049"
-[1] "Started finding top isoforms based on Hyp1 at: 2024-05-22 16:45:14.374765"
+There were 27 warnings (use warnings() to see them)
+There were 18 warnings (use warnings() to see them)
+[1] "Finished adding hypothesis 2 and 3 worst p-values at: 2024-05-22 20:42:52.683964"
+[1] "Started adding total sums, TPM, etc. at: 2024-05-22 20:42:52.684352"
+[1] "Finished adding total sums, TPM, etc. at: 2024-05-22 20:42:52.698865"
+[1] "Started adding omim info at: 2024-05-22 20:42:52.699082"
+[1] "Finished adding omim info at: 2024-05-22 20:42:52.718391"
+[1] "Started finding top isoforms based on Hyp1 at: 2024-05-22 20:42:52.718551"
 [1] "Dummy_1"
 [1] "Dummy_2"
 [1] "Dummy_3"
 [1] "Dummy_4"
-[1] "Finished finding top isoforms based on Hyp1 at: 2024-05-22 16:45:20.376553"
-[1] "Started finding top isoforms based on Hyp2 and Hyp3 at: 2024-05-22 16:45:20.377184"
+[1] "Finished finding top isoforms based on Hyp1 at: 2024-05-22 20:42:52.767652"
+[1] "Started finding top isoforms based on Hyp2 and Hyp3 at: 2024-05-22 20:42:52.767797"
 [1] "Dummy_1"
 [1] "Dummy_2"
 [1] "Dummy_3"
 [1] "Dummy_4"
-[1] "Finished finding top isoforms based on Hyp2 and Hyp3 at: 2024-05-22 16:45:44.482357"
+[1] "Finished finding top isoforms based on Hyp2 and Hyp3 at: 2024-05-22 20:42:52.912083"
 [1] "Unit test results for final table construction and filtering:"
 Test passed 
 Test passed 

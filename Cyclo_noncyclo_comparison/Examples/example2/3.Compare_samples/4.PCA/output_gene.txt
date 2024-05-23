@@ -1,9 +1,9 @@
    Isoform_PBid  Sample cyclo_count noncyclo_count P_Value_Hyp1
-1:        GeneA Dummy_1          70              0 6.238085e-15
+1:        GeneA Dummy_1          70              0 1.448127e-06
 2:        GeneA Dummy_2           0              0           NA
 3:        GeneA Dummy_3           0              0           NA
 4:        GeneA Dummy_4           0              0           NA
-5:        GeneC Dummy_1          50             50 7.580062e-01
+5:        GeneC Dummy_1          50             50 1.632116e-07
 6:        GeneC Dummy_2           0              0           NA
    Max_P_Value_Hyp2_below_median Max_P_Value_Hyp2_above_median
 1:                            NA                            NA
@@ -13,33 +13,33 @@
 5:                  1.000000e+00                             1
 6:                  3.815353e-12                            NA
    Max_P_Value_Hyp3_below_median Max_P_Value_Hyp3_above_median associated_gene
-1:                            NA                  1.405507e-14           GeneA
+1:                            NA                  9.391454e-16           GeneA
 2:                            NA                            NA           GeneA
 3:                            NA                            NA           GeneA
 4:                            NA                            NA           GeneA
-5:                  2.707339e-11                            NA           GeneC
-6:                  2.707339e-11                            NA           GeneC
+5:                   8.72571e-12                            NA           GeneC
+6:                   8.72571e-12                            NA           GeneC
    cyclo_total_sum noncyclo_total_sum CycloFraction NoncycloFraction Cyclo_TPM
-1:            1245               1145    0.05622490       0.00000000  56224.90
-2:            1175               1175    0.00000000       0.00000000      0.00
-3:            1115               1115    0.00000000       0.00000000      0.00
-4:            1195               1145    0.00000000       0.00000000      0.00
-5:            1245               1145    0.04016064       0.04366812  40160.64
-6:            1175               1175    0.00000000       0.00000000      0.00
+1:            3245               1145    0.02157165       0.00000000  21571.65
+2:            3175               1175    0.00000000       0.00000000      0.00
+3:            3115               1115    0.00000000       0.00000000      0.00
+4:            3195               1145    0.00000000       0.00000000      0.00
+5:            3245               1145    0.01540832       0.04366812  15408.32
+6:            3175               1175    0.00000000       0.00000000      0.00
    Noncyclo_TPM NormalizedCycloFraction NormalizedNoncycloFraction
-1:         0.00               1.0000000                  0.0000000
+1:         0.00                 1.00000                    0.00000
 2:         0.00                      NA                         NA
 3:         0.00                      NA                         NA
 4:         0.00                      NA                         NA
-5:     43668.12               0.4790795                  0.5209205
+5:     43668.12                 0.26082                    0.73918
 6:         0.00                      NA                         NA
    NormalizedFractionDifference Avg_Cyclo_TPM Avg_Noncyclo_TPM gene_cyclo_total
-1:                     1.000000      14056.22             0.00               70
-2:                           NA      14056.22             0.00                0
-3:                           NA      14056.22             0.00                0
-4:                           NA      14056.22             0.00                0
-5:                    -0.041841      31711.17         33044.82               50
-6:                           NA      31711.17         33044.82                0
+1:                    1.0000000      5392.912             0.00               70
+2:                           NA      5392.912             0.00                0
+3:                           NA      5392.912             0.00                0
+4:                           NA      5392.912             0.00                0
+5:                   -0.4783599     11777.284         33044.82               50
+6:                           NA     11777.284         33044.82                0
    gene_noncyclo_total isoform_cyclo_proportion isoform_noncyclo_proportion
 1:                   0                        1                          NA
 2:                   0                       NA                          NA
@@ -48,12 +48,12 @@
 5:                  50                        1                           1
 6:                   0                       NA                          NA
    SD_Cyclo_TPM SD_Noncyclo_TPM Cyclo_Z_Score Noncyclo_Z_Score MedianCyclo_TPM
-1:     28112.45            0.00     1.5000000               NA            0.00
-2:     28112.45            0.00    -0.5000000               NA            0.00
-3:     28112.45            0.00    -0.5000000               NA            0.00
-4:     28112.45            0.00    -0.5000000               NA            0.00
-5:     21229.32        22036.84     0.3980094        0.4820699        41000.82
-6:     21229.32        22036.84    -1.4937444       -1.4995262        41000.82
+1:    10785.824            0.00      1.500000               NA            0.00
+2:    10785.824            0.00     -0.500000               NA            0.00
+3:    10785.824            0.00     -0.500000               NA            0.00
+4:    10785.824            0.00     -0.500000               NA            0.00
+5:     7856.002        22036.84      0.462199        0.4820699        15528.89
+6:     7856.002        22036.84     -1.499145       -1.4995262        15528.89
    MedianNoncyclo_TPM Cyclo_TPM_Rank Noncyclo_TPM_Rank Chromosome
 1:               0.00              4               2.5         NA
 2:               0.00              2               2.5         NA
@@ -83,19 +83,19 @@
 5:              NA       NA         NA                   NA              FALSE
 6:              NA       NA         NA                   NA              FALSE
 [1] "Number of isoforms to keep after filtering based on counts:"
-[1] 9
+[1] 10
    Isoform_PBid Dummy_1_Cyclo_ Dummy_1_Noncyclo_ Dummy_2_Cyclo_
-1:        GeneA       56224.90              0.00           0.00
-2:        GeneB           0.00              0.00       42553.19
-3:        GeneC       40160.64          43668.12           0.00
-4:        GeneD       28112.45          30567.69       29787.23
-5:        GeneE       24096.39              0.00           0.00
-6:        GeneF           0.00              0.00       25531.91
+1:        GeneA      21571.649              0.00          0.000
+2:        GeneB          0.000              0.00      15748.031
+3:        GeneC      15408.320          43668.12          0.000
+4:        GeneD      10785.824          30567.69      11023.622
+5:        GeneE       9244.992              0.00          0.000
+6:        GeneF          0.000              0.00       9448.819
    Dummy_2_Noncyclo_ Dummy_3_Cyclo_ Dummy_3_Noncyclo_ Dummy_4_Cyclo_
 1:              0.00           0.00              0.00           0.00
 2:          42553.19           0.00              0.00           0.00
-3:              0.00       44843.05          44843.05       41841.00
-4:          29787.23       31390.13          31390.13       71129.71
+3:              0.00       16051.36          44843.05       15649.45
+4:          29787.23       11235.96          31390.13       26604.07
 5:              0.00           0.00              0.00           0.00
 6:          25531.91           0.00              0.00           0.00
    Dummy_4_Noncyclo_
@@ -105,12 +105,12 @@
 4:          30567.69
 5:              0.00
 6:              0.00
-                             Sample        PC1         PC2     Type
-Dummy_1_Cyclo_       Dummy_1_Cyclo_  2.1280809 -2.65009940    cyclo
-Dummy_1_Noncyclo_ Dummy_1_Noncyclo_  0.2145620  1.45247033 noncyclo
-Dummy_2_Cyclo_       Dummy_2_Cyclo_ -2.5131389 -1.77002839    cyclo
-Dummy_2_Noncyclo_ Dummy_2_Noncyclo_ -3.0709190  0.05503015 noncyclo
-Dummy_3_Cyclo_       Dummy_3_Cyclo_  1.2448640  0.01654005    cyclo
-Dummy_3_Noncyclo_ Dummy_3_Noncyclo_  0.6570688  1.93980802 noncyclo
-Dummy_4_Cyclo_       Dummy_4_Cyclo_  1.1249202 -0.49619110    cyclo
-Dummy_4_Noncyclo_ Dummy_4_Noncyclo_  0.2145620  1.45247033 noncyclo
+                             Sample       PC1        PC2     Type
+Dummy_1_Cyclo_       Dummy_1_Cyclo_  3.217928 -0.5653521    cyclo
+Dummy_1_Noncyclo_ Dummy_1_Noncyclo_ -2.157599 -1.1389494 noncyclo
+Dummy_2_Cyclo_       Dummy_2_Cyclo_  1.724168  1.5431359    cyclo
+Dummy_2_Noncyclo_ Dummy_2_Noncyclo_ -2.266256  3.2831748 noncyclo
+Dummy_3_Cyclo_       Dummy_3_Cyclo_  2.053064 -0.2143567    cyclo
+Dummy_3_Noncyclo_ Dummy_3_Noncyclo_ -1.562145 -1.5331364 noncyclo
+Dummy_4_Cyclo_       Dummy_4_Cyclo_  1.148439 -0.2355666    cyclo
+Dummy_4_Noncyclo_ Dummy_4_Noncyclo_ -2.157599 -1.1389494 noncyclo

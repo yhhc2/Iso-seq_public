@@ -1,11 +1,11 @@
 Verification successful: The number of reads matches.
 Line counts for each output file:
-PS1_Dummy_1_cyclo_read_stat.txt: 1245 lines
+PS1_Dummy_1_cyclo_read_stat.txt: 3245 lines
 PS2_Dummy_1_noncyclo_read_stat.txt: 1145 lines
-PS3_Dummy_2_cyclo_read_stat.txt: 1175 lines
+PS3_Dummy_2_cyclo_read_stat.txt: 3175 lines
 PS4_Dummy_2_noncyclo_read_stat.txt: 1175 lines
-PS5_Dummy_3_cyclo_read_stat.txt: 1115 lines
+PS5_Dummy_3_cyclo_read_stat.txt: 3115 lines
 PS6_Dummy_3_noncyclo_read_stat.txt: 1115 lines
-PS7_Dummy_4_cyclo_read_stat.txt: 1195 lines
+PS7_Dummy_4_cyclo_read_stat.txt: 3195 lines
 PS8_Dummy_4_noncyclo_read_stat.txt: 1145 lines
 id pbid__read_stat.txt: 1 lines

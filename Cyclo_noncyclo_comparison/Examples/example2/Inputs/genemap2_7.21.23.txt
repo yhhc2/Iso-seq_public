@@ -6,3 +6,4 @@ chr1	1	27600000	1p36		605462	BCC1	"Basal cell carcinoma, susceptibility to, 1"		
 chr1	1	27600000	1p36		606928	BMND3	Bone mineral density QTL 3		246259		?another locus at 3p21	"[Bone mineral density QTL 3], 606928 (2)"	
 chr1	1	2300000	1p36.33		618815	"C1DUPp36.33, DUP1p36.33"	"Chromosome 1p36.33 duplication syndrome, ATAD3 gene cluster"					"Chromosome 1p36.33 duplication syndrome, ATAD3 gene cluster, 618815 (4), Autosomal dominant"	
 chr1	1	27600000	1p36		155600	"CMM, MLM, DNS"	Cutaneous malignant melanoma/dysplastic nevus		1243		some linkage studies negative; see 9p	"{Melanoma, cutaneous malignant, 1}, 155600 (2), Autosomal dominant"	
+chr1	1	Dummy	Dummy		Dummy	Dummy	Dummy	Dummy	Dummy		Dummy	Dummy	

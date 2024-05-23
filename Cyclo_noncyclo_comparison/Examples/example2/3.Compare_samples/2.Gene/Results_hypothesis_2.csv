@@ -41,6 +41,12 @@
 "GeneI","Dummy_1","Dummy_4",1,1
 "GeneI","Dummy_2","Dummy_4",0.694108024349105,NA
 "GeneI","Dummy_3","Dummy_4",NA,0.687903541215172
+"GeneJ","Dummy_1","Dummy_2",NA,NA
+"GeneJ","Dummy_1","Dummy_3",NA,NA
+"GeneJ","Dummy_2","Dummy_3",NA,NA
+"GeneJ","Dummy_1","Dummy_4",NA,NA
+"GeneJ","Dummy_2","Dummy_4",NA,NA
+"GeneJ","Dummy_3","Dummy_4",NA,NA
 "GeneB","Dummy_1","Dummy_2",NA,1.31904779848834e-11
 "GeneB","Dummy_1","Dummy_3",NA,NA
 "GeneB","Dummy_2","Dummy_3",NA,2.45117023324742e-11

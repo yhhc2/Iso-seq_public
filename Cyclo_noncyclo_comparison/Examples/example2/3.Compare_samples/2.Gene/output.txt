@@ -1,4 +1,4 @@
-[1] "Start time: 2024-05-22 16:45:46.869225"
+[1] "Start time: 2024-05-22 20:42:53.677565"
 
 Attaching package: 'dplyr'
 
@@ -67,16 +67,16 @@ The following object is masked from 'package:dplyr':
 [2] "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_2/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt"
 [3] "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_3/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt"
 [4] "/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example2/2.Collapse_counts/Results/Dummy_4/collapsed_by_isoform_file_cyclo_noncyclo_counts_classified.txt"
-[1] "Starting hypothesis 1 p-value calculations at: 2024-05-22 16:45:47.891338"
+[1] "Starting hypothesis 1 p-value calculations at: 2024-05-22 20:42:54.590409"
 [1] "Number of unique isoforms:"
-[1] 9
-[1] "Completed hypothesis 1 p-value calculations at: 2024-05-22 16:45:49.246404"
-[1] "Starting hypothesis 2 and 3 p-value calculations at: 2024-05-22 16:45:49.246717"
+[1] 10
+[1] "Completed hypothesis 1 p-value calculations at: 2024-05-22 20:42:55.985688"
+[1] "Starting hypothesis 2 and 3 p-value calculations at: 2024-05-22 20:42:55.986066"
 [1] "Number of isoforms to keep for hyp2/3 after filtering based on counts:"
-[1] 9
+[1] 10
 [1] "Number of comparisons:"
-[1] 54
-[1] "End time: 2024-05-22 16:45:50.481868"
+[1] 60
+[1] "End time: 2024-05-22 20:42:57.548557"
 [1] "Unit test results for p-value generation:"
 Test passed 
 Test passed 
@@ -88,9 +88,9 @@ Test passed
 Test passed 
 Test passed 
 Test passed 
-[1] "Started adding hypothesis 1 p-values at: 2024-05-22 16:45:51.42354"
-[1] "Finished adding hypothesis 1 p-values at: 2024-05-22 16:45:51.424894"
-[1] "Started adding hypothesis 2 and 3 worst p-values at: 2024-05-22 16:45:51.425085"
+[1] "Started adding hypothesis 1 p-values at: 2024-05-22 20:42:58.405164"
+[1] "Finished adding hypothesis 1 p-values at: 2024-05-22 20:42:58.408769"
+[1] "Started adding hypothesis 2 and 3 worst p-values at: 2024-05-22 20:42:58.408961"
 Warning messages:
 1: In max(P_Value_Hyp2_below_median, na.rm = TRUE) :
   no non-missing arguments to max; returning -Inf
@@ -121,45 +121,25 @@ Warning messages:
   no non-missing arguments to max; returning -Inf
 6: In max(P_Value_Hyp2_above_median, na.rm = TRUE) :
   no non-missing arguments to max; returning -Inf
-There were 14 warnings (use warnings() to see them)
-Warning messages:
-1: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-2: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-3: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-4: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-5: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-6: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-7: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-8: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-9: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-10: In max(P_Value_Hyp3_above_median, na.rm = TRUE) :
-  no non-missing arguments to max; returning -Inf
-[1] "Finished adding hypothesis 2 and 3 worst p-values at: 2024-05-22 16:45:51.439581"
-[1] "Started adding total sums, TPM, etc. at: 2024-05-22 16:45:51.439938"
-[1] "Finished adding total sums, TPM, etc. at: 2024-05-22 16:45:51.451559"
-[1] "Started adding omim info at: 2024-05-22 16:45:51.451762"
-[1] "Finished adding omim info at: 2024-05-22 16:45:53.502222"
-[1] "Started finding top isoforms based on Hyp1 at: 2024-05-22 16:45:53.502515"
+There were 16 warnings (use warnings() to see them)
+There were 12 warnings (use warnings() to see them)
+[1] "Finished adding hypothesis 2 and 3 worst p-values at: 2024-05-22 20:42:58.423359"
+[1] "Started adding total sums, TPM, etc. at: 2024-05-22 20:42:58.423729"
+[1] "Finished adding total sums, TPM, etc. at: 2024-05-22 20:42:58.436064"
+[1] "Started adding omim info at: 2024-05-22 20:42:58.436279"
+[1] "Finished adding omim info at: 2024-05-22 20:42:58.455906"
+[1] "Started finding top isoforms based on Hyp1 at: 2024-05-22 20:42:58.456065"
 [1] "Dummy_1"
 [1] "Dummy_2"
 [1] "Dummy_3"
 [1] "Dummy_4"
-[1] "Finished finding top isoforms based on Hyp1 at: 2024-05-22 16:45:53.538032"
-[1] "Started finding top isoforms based on Hyp2 and Hyp3 at: 2024-05-22 16:45:53.538207"
+[1] "Finished finding top isoforms based on Hyp1 at: 2024-05-22 20:42:58.521804"
+[1] "Started finding top isoforms based on Hyp2 and Hyp3 at: 2024-05-22 20:42:58.522386"
 [1] "Dummy_1"
 [1] "Dummy_2"
 [1] "Dummy_3"
 [1] "Dummy_4"
-[1] "Finished finding top isoforms based on Hyp2 and Hyp3 at: 2024-05-22 16:46:18.090224"
+[1] "Finished finding top isoforms based on Hyp2 and Hyp3 at: 2024-05-22 20:42:58.693772"
 [1] "Unit test results for final table construction and filtering:"
 Test passed 
 Test passed 
