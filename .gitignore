@@ -22,3 +22,8 @@ Cyclo_noncyclo_comparison/Examples/example2/Inputs/.Rhistory
 !README.md
 !README.rmd
 
+# Do not ignore script files
+!Cyclo_noncyclo_comparison/Scripts/
+!Cyclo_noncyclo_comparison/Scripts/**
+
+
