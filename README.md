@@ -81,7 +81,7 @@ genetic cause.
 
 <div style="text-align: center;">
 
-<table class="table" style="font-size: 10px; margin-left: auto; margin-right: auto;">
+<table class="table" style="font-size: 5px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
 UDN212054
 </caption>
