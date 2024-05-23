@@ -99,3 +99,4 @@ print(pca_data)
 
 # Save the plot
 ggsave(plot_title, plot = pca_plot, width = 8, height = 6)
+ggsave(paste0(plot_title,".png"), plot = pca_plot, width = 8, height = 6, dpi = 300)
