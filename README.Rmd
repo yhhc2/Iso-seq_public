@@ -77,11 +77,24 @@ knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Hyp1.png")
 ```
 </div>
 
+<style>
+/* Apply custom font size to all tables */
+table {
+  font-size: 10px;  /* Adjust the font size as needed */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Optional: Customize other aspects of the table */
+table th, table td {
+  padding: 5px;  /* Adjust cell padding as needed */
+}
+</style>
+
 <div style="text-align: center;">
 ```{r, echo=FALSE, out.width='50%'}
  df <- markdown_tables$hyp1
-  knitr::kable(df, caption = "UDN212054") %>%
-    kable_styling(font_size = 5)  # Adjust the font size as needed
+  knitr::kable(df, caption = "UDN212054")
 ```
 </div>
 
