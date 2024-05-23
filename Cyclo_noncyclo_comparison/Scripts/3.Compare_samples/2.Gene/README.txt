@@ -1,0 +1,1 @@
+Use the script in the Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/1.Isoform folder.
