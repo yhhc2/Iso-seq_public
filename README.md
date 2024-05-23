@@ -3,6 +3,11 @@ NMDSeqR
 Hank Cheng
 2024-05-23
 
+## Usage
+
+Please view the Complete_workflow_example2.sh file in the example2
+folder to see a step-by-step usage of this package with dummy data.
+
 ## Introduction
 
 This package takes in data from bulk-Isoseq processed with and without
@@ -18,9 +23,6 @@ performed on bulk [Isoseq](https://isoseq.how/) data:
 <img src="Cyclo_noncyclo_comparison/Markdown/Preprocessing.png" width="70%" height="300px" />
 
 </div>
-
-Please view the Complete_workflow_example2.sh file in the example2
-folder to see a step-by-step usage of this package with dummy data.
 
 The package outputs these following results based on hypothesis testing
 with chi-square tests within samples and between samples:
@@ -755,23 +757,23 @@ TRUE
 
 ## Validating effects of NMD
 
-To validate the effects of NMD, PCA was performed on the gene-level
-(left) and isoform-level (right) expression matrix for the 13 patients
-(26 samples) included in the analysis.
+To validate the effects of NMD, PCA was performed on the gene-level and
+isoform-level expression matrix for the 13 patients (26 samples)
+included in the analysis.
 
-<div style="display: flex; justify-content: space-between;">
+### Gene-Level
 
-<div style="width: 48%; text-align: center;">
+<div style="text-align: center;">
 
-<img src="Cyclo_noncyclo_comparison/Markdown/PCA_gene_level.pdf.png" width="100%" height="300px" />
-
-</div>
-
-<div style="width: 48%; text-align: center;">
-
-<img src="Cyclo_noncyclo_comparison/Markdown/PCA_isoform_level.pdf.png" width="100%" height="300px" />
+<img src="Cyclo_noncyclo_comparison/Markdown/PCA_gene_level.pdf.png" width="60%" />
 
 </div>
+
+### Isoform-Level
+
+<div style="text-align: center;">
+
+<img src="Cyclo_noncyclo_comparison/Markdown/PCA_isoform_level.pdf.png" width="60%" />
 
 </div>
 
