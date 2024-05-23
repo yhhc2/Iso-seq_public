@@ -73,7 +73,7 @@ genetic cause.
 
 <div style="text-align: center;">
 
-<img src="Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/Hyp1.png" width="70%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Hyp1.png" width="70%" />
 
 </div>
 
@@ -243,7 +243,7 @@ related to NMD.
 
 <div style="text-align: center;">
 
-<img src="Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/Hyp2_gene_below.png" width="70%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Hyp2_gene_below.png" width="70%" />
 
 </div>
 
@@ -338,7 +338,7 @@ hypothesis 2.
 
 <div style="text-align: center;">
 
-<img src="Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/Hyp3_isoform_above.png" width="70%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Hyp3_isoform_above.png" width="70%" />
 
 </div>
 
@@ -661,7 +661,7 @@ isoforms that undergo NMD.
 
 <div style="text-align: center;">
 
-<img src="Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/Hyp5.png" width="70%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Hyp5.png" width="70%" />
 
 </div>
 
