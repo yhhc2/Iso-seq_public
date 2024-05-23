@@ -13,3 +13,10 @@
 !Cyclo_noncyclo_comparison/Examples/example2/
 !Cyclo_noncyclo_comparison/Examples/example2/**
 Cyclo_noncyclo_comparison/Examples/example2/Inputs/.Rhistory
+
+# Do not ignore files in the markdown directory
+!Cyclo_noncyclo_comparison/Markdown/
+!Cyclo_noncyclo_comparison/Markdown/**
+
+# Do not ignore readme file
+!README.md

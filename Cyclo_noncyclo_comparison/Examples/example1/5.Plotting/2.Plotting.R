@@ -1,69 +1,43 @@
+library(ggplot2)
+library(data.table)
+
+data_for_plotting <- readRDS("~/Research/Projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/data_for_plotting.rds")
+
+to_save_into_rds <- c()
 
 ##################################################
-# Volcano plot to visualize p-values
+# HARS1 Hypothesis 1
 ##################################################
 
-##################################################
-# Hypothesis 1
-##################################################
+significance_thresh <- 0.05
 
-##################################################
-# Make volcano plot. Hypothesis 1.
-##################################################
+masking_thresh <- 0.01
+
+sample_of_interest <- "UDN212054"
+genes_of_interest <- c("HARS1", "EDN1")
 
 # Replace 'gene_of_interest' with the name of the gene you want to label in the plot
-data <- merged_data_omim_added
+data <- data_for_plotting$isoforms_filtered_hyp1
 
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = `NormalizedFractionDifference`, y = -log10(Hypothesis_1_P_values))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "CycloFraction-NoncycloFraction", y = "-log10(hypothesis 1 p-value)", title = paste(sample_of_interest)) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
+isoforms_significant_in_other_samples <- subset(data, Sample != sample_of_interest & P_Value_Hyp1 < masking_thresh)
 
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-# print(volcano_plot_with_label)
-title <- paste(sample_of_interest,".pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-##################################################
-# Make volcano plot. Hypothesis 1. _removed_if_any_controls_sig_for_hyp1.pdf
-##################################################
-
-# If the isoform has a significant hypothesis 1 p-value in any of the controls, 
-# remove it.
-
-isoforms_significant_in_other_samples <- subset(results_hypothesis_1, Sample != sample_of_interest & P_Value < p_value_thresh)
-
-isoforms_significant_in_other_samples <- unique(isoforms_significant_in_other_samples$Isoform)
+isoforms_significant_in_other_samples <- unique(isoforms_significant_in_other_samples$Isoform_PBid)
 
 # Only include rows from merged_data_omim_added if the Isoform column doesn't contain a value that is present in the isoforms_significant_in_samples_other_than_UDN212054 character array
-merged_data_omim_added_removed_common_hypothesis_1_isoforms <- subset(merged_data_omim_added, !(Isoform %in% isoforms_significant_in_other_samples))
+data <- subset(data, !(Isoform_PBid %in% isoforms_significant_in_other_samples))
 
-# Replace 'gene_of_interest' with the name of the gene you want to label in the plot
-data <- merged_data_omim_added_removed_common_hypothesis_1_isoforms
+data <- subset(data, Sample == sample_of_interest)
+
+data <- subset(data, P_Value_Hyp1 < significance_thresh)
+
+data$PhenotypesNotEmpty <- data$PhenotypesNotEmpty <- data$Phenotypes != "" & !is.na(data$Phenotypes)
 
 # Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = `NormalizedFractionDifference`, y = -log10(Hypothesis_1_P_values))) +
+volcano_plot <- ggplot(data, aes(x = `NormalizedFractionDifference`, y = -log10(P_Value_Hyp1))) +
   geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
+  geom_point(data = subset(data, associated_gene %in% genes_of_interest), color = "blue", size = 3) +  # Highlighted gene point
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "CycloFraction-NoncycloFraction", y = "-log10(hypothesis 1 p-value)", title = paste(sample_of_interest, " removed isoforms if any controls significant for hypothesis 1")) +
+  labs(x = "NormalizedFractionDifference", y = "-log10(P_Value_Hyp1)", title = paste(sample_of_interest)) +
   scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
   theme_minimal() +
   theme(legend.title = element_blank())  # Hide the legend title (optional)
@@ -72,226 +46,9 @@ volcano_plot <- ggplot(data, aes(x = `NormalizedFractionDifference`, y = -log10(
 # The hjust and vjust arguments should be negative to position the label correctly above the point
 volcano_plot_with_label <- volcano_plot +
   geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
+    data = subset(data, associated_gene %in% genes_of_interest),
     aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-#print(volcano_plot_with_label)  
-title <- paste(sample_of_interest,"_removed_if_any_controls_sig_for_hyp1.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-##################################################
-# Hypothesis 2
-##################################################
-
-
-##################################################
-# Hypothesis 2. _largestP_hypothesis_2_TPM_Norm.pdf
-##################################################
-
-data <- merged_data_omim_added
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 Worst P-Value")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_TPM_Norm.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-##################################################
-# Hypothesis 2. _largestP_hypothesis_2_Normalized_Frac.pdf
-##################################################
-
-data <- merged_data_omim_added
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "NormalizedCycloFrac - NormalizedNoncycloFrac", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 worst P-Value")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_Normalized_Frac.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-
-##################################################
-# Hypothesis 2. _largestP_hypothesis_2_keepHyp1OnlySig_TPM_Norm.pdf
-##################################################
-
-# Keep isoforms that have significant hyp1 p-values ONLY in the sample of interest.
-
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 worst, isoforms only significant for hyp1 in sample of interest")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_keepHyp1OnlySig_TPM_Norm.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-##################################################
-# Hypothesis 2. _largestP_hypothesis_2_keepHyp1OnlySig_Normalized_Frac.pdf
-##################################################
-
-# Replace 'gene_of_interest' with the name of the gene you want to label in the plot
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "NormalizedCycloFrac - NormalizedNoncycloFrac", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 Fisher, removed isoforms sig in controls")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_keepHyp1OnlySig_Normalized_Frac.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-##################################################
-# Hypothesis 3
-##################################################
-
-
-##################################################
-# Hypothesis 3. _largestP_hypothesis_3_TPM_Norm.pdf
-##################################################
-
-data <- merged_data_omim_added
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM, y = -log10(Combined_Hypothesis_3_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Cyclo_TPM - Cyclo_TPM)/Cyclo_TPM", y = "-log10(Combined_Hypothesis_3_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 3 Worst P-Value")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_3_TPM_Norm.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-##################################################
-# Hypothesis 3. _largestP_hypothesis_3_Normalized_Frac.pdf
-##################################################
-
-data <- merged_data_omim_added
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = -log10(Combined_Hypothesis_3_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "NormalizedCycloFrac - NormalizedNoncycloFrac", y = "-log10(Combined_Hypothesis_3_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 3 worst P-Value")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
+    hjust = 0.5, vjust = 1.5,
     size = 2,
     color = "Green",
     fontface = "bold"
@@ -299,60 +56,37 @@ volcano_plot_with_label <- volcano_plot +
 
 # Print the plot
 #print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_3_Normalized_Frac.pdf")
+title <- paste(sample_of_interest,".pdf")
 ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+ggsave(filename = "Hyp1.png", plot = volcano_plot_with_label, width = 8, height = 6, dpi = 300)
 
 
-
-##################################################
-# Hypothesis 3. _largestP_hypothesis_3_keepHyp1OnlySig_TPM_Norm.pdf
-##################################################
-
-# Keep isoforms that have significant hyp1 p-values ONLY in the sample of interest.
-
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM, y = -log10(Combined_Hypothesis_3_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM", y = "-log10(Combined_Hypothesis_3_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 3 worst, isoforms only significant for hyp1 in sample of interest")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_3_keepHyp1OnlySig_TPM_Norm.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
+data <- subset(data, associated_gene %in% genes_of_interest)
+# Save the data as a dataframe.
+to_save_into_rds$hyp1 <- data
 
 ##################################################
-# Hypothesis 3. _largestP_hypothesis_3_keepHyp1OnlySig_Normalized_Frac.pdf
+# VTA1 Hypothesis 2 gene below median
 ##################################################
+
+sample_of_interest <- "UDN687128"
+genes_of_interest <- c("VTA1")
 
 # Replace 'gene_of_interest' with the name of the gene you want to label in the plot
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
+data <- data_for_plotting$genes_filtered_hyp2_below_median
+
+data <- subset(data, Sample == sample_of_interest)
+
+data <- subset(data, Max_P_Value_Hyp2_below_median < significance_thresh)
+
+data$PhenotypesNotEmpty <- data$PhenotypesNotEmpty <- data$Phenotypes != "" & !is.na(data$Phenotypes)
 
 # Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = -log10(Combined_Hypothesis_3_Worst_P_Value))) +
+volcano_plot <- ggplot(data, aes(x = `Noncyclo_Z_Score`, y = -log10(Max_P_Value_Hyp2_below_median))) +
   geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
+  geom_point(data = subset(data, associated_gene %in% genes_of_interest), color = "blue", size = 3) +  # Highlighted gene point
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "NormalizedCycloFrac - NormalizedNoncycloFrac", y = "-log10(Combined_Hypothesis_3_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 3 Fisher, removed isoforms sig in controls")) +
+  labs(x = "Noncyclo_Z_Score", y = "-log10(Max_P_Value_Hyp2_below_median)", title = paste(sample_of_interest)) +
   scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
   theme_minimal() +
   theme(legend.title = element_blank())  # Hide the legend title (optional)
@@ -361,211 +95,49 @@ volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = -log10(Co
 # The hjust and vjust arguments should be negative to position the label correctly above the point
 volcano_plot_with_label <- volcano_plot +
   geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
+    data = subset(data, associated_gene %in% genes_of_interest),
     aes(label = associated_gene),
-    hjust = 0, vjust = -1,
+    hjust = 0.5, vjust = 1.5,
     size = 2,
     color = "Green",
     fontface = "bold"
   )
 
 # Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_3_keepHyp1OnlySig_Normalized_Frac.pdf")
+#print(volcano_plot_with_label)
+title <- paste(sample_of_interest,".pdf")
 ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+ggsave(filename = "Hyp2_gene_below.png", plot = volcano_plot_with_label, width = 8, height = 6, dpi = 300)
 
 
-
-##################################################
-# Hypothesis 3. _Cyclo_TPM_Zscore_TPM_Norm.pdf
-##################################################
-
-data <- merged_data_omim_added
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM, y = Cyclo_Z_Score)) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM", y = "Cyclo_Z_Score", title = paste(sample_of_interest, "Cyclo Z-score")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-# print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_Cyclo_TPM_Zscore_TPM_Norm.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+data <- subset(data, associated_gene %in% genes_of_interest)
+# Save the data as a dataframe.
+to_save_into_rds$hyp2_gene_below <- data
 
 
 ##################################################
-# Hypothesis 3. _Cyclo_TPM_Zscore_Normalized_Frac.pdf
+# SET Hypothesis 3 isoform above median
 ##################################################
 
-data <- merged_data_omim_added
 
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = Cyclo_Z_Score)) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "NormalizedFractionDifference", y = "Cyclo_Z_Score", title = paste(sample_of_interest, "Cyclo Z-score")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-# print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_Cyclo_TPM_Zscore_Normalized_Frac.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-##################################################
-# Hypothesis 3. _Cyclo_TPM_Zscore_keepHyp1OnlySig__TPM_Norm.pdf
-##################################################
-
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM, y = Cyclo_Z_Score)) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM", y = "Cyclo_Z_Score", title = paste(sample_of_interest, "Cyclo Z-score")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-# print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_Cyclo_TPM_Zscore_keepHyp1OnlySig__TPM_Norm.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-##################################################
-# Hypothesis 3. _Cyclo_TPM_Zscore__keepHyp1OnlySig_Normalized_Frac.pdf
-##################################################
-
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = Cyclo_Z_Score)) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "NormalizedFractionDifference", y = "Cyclo_Z_Score", title = paste(sample_of_interest, "Cyclo Z-score")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-# print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_Cyclo_TPM_Zscore__keepHyp1OnlySig_Normalized_Frac.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-# LEFT OFF HERE need to add hypothesis 2 gene level
-
-
-##################################################
-# Gene level plots
-##################################################
-
-##################################################
-# Hypothesis 2. _largestP_hypothesis_2_TPM_Norm_perGene.pdf
-##################################################
-
-data <- collapsed_by_gene_merged_data_omim_added
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 worst p-value")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_TPM_Norm_perGene.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-
-##################################################
-# Hypothesis 2. _largestP_hypothesis_2_Normalized_Frac_perGene.pdf
-##################################################
+sample_of_interest <- "UDN215640"
+genes_of_interest <- c("SET")
 
 # Replace 'gene_of_interest' with the name of the gene you want to label in the plot
-data <- collapsed_by_gene_merged_data_omim_added
+data <- data_for_plotting$isoforms_filtered_hyp3_above_median
+
+data <- subset(data, Sample == sample_of_interest)
+
+data <- subset(data, Max_P_Value_Hyp3_above_median < significance_thresh)
+
+data$PhenotypesNotEmpty <- data$PhenotypesNotEmpty <- data$Phenotypes != "" & !is.na(data$Phenotypes)
 
 # Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
+volcano_plot <- ggplot(data, aes(x = `Cyclo_Z_Score`, y = -log10(Max_P_Value_Hyp3_above_median))) +
   geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
+  geom_point(data = subset(data, associated_gene %in% genes_of_interest), color = "blue", size = 3) +  # Highlighted gene point
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "NormalizedCycloFrac - NormalizedNoncycloFrac", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 worst p-value")) +
+  labs(x = "Cyclo_Z_Score", y = "-log10(Max_P_Value_Hyp3_above_median)", title = paste(sample_of_interest)) +
   scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
   theme_minimal() +
   theme(legend.title = element_blank())  # Hide the legend title (optional)
@@ -574,193 +146,96 @@ volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = -log10(Co
 # The hjust and vjust arguments should be negative to position the label correctly above the point
 volcano_plot_with_label <- volcano_plot +
   geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
+    data = subset(data, associated_gene %in% genes_of_interest),
     aes(label = associated_gene),
-    hjust = 0, vjust = -1,
+    hjust = 0.5, vjust = 1.5,
     size = 2,
     color = "Green",
     fontface = "bold"
   )
 
 # Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_Normalized_Frac_perGene.pdf")
+#print(volcano_plot_with_label)
+title <- paste(sample_of_interest,".pdf")
 ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+ggsave(filename = "Hyp3_isoform_above.png", plot = volcano_plot_with_label, width = 8, height = 6, dpi = 300)
+
+
+data <- subset(data, associated_gene %in% genes_of_interest)
+# Save the data as a dataframe.
+to_save_into_rds$hyp3_isoform_above <- data
 
 
 ##################################################
-# Hypothesis 2. _largestP_hypothesis_2_keepHyp1OnlySig_TPM_Norm_perGene.pdf
+# MFN2 Hypothesis 5
 ##################################################
 
-# LEFT OFF HERE. Will need to do hypothesis 1 p-values per gene. 
+masking_thresh <- 0.0000001
+hyp1_sig_proportion_masking_threshold <- 0.5
 
-# If the isoform has a significant hypothesis 1 p-value in any of the controls, 
-# remove it.
-isoforms_significant_in_other_samples <- subset(collapsed_by_gene_merged_data_omim_added, Sample != sample_of_interest & P_Value < p_value_thresh)
-isoforms_significant_in_other_samples <- unique(isoforms_significant_in_other_samples$Isoform)
+sample_of_interest <- "UDN633333"
+genes_of_interest <- c("MFN2")
+
+# Replace 'gene_of_interest' with the name of the gene you want to label in the plot
+data <- data_for_plotting$genes_filtered_hyp5
+
+isoforms_significant_in_other_samples <- subset(data, Sample != sample_of_interest & P_Value_Hyp5 < masking_thresh)
+isoforms_significant_in_other_samples <- unique(isoforms_significant_in_other_samples$associated_gene)
 # Only include rows from merged_data_omim_added if the Isoform column doesn't contain a value that is present in the isoforms_significant_in_samples_other_than_UDN212054 character array
-merged_data_omim_added_removed_common_hypothesis_1_isoforms <- subset(merged_data_omim_added, !(Isoform %in% isoforms_significant_in_other_samples))
+data <- subset(data, !(associated_gene %in% isoforms_significant_in_other_samples))
 
+data_data_table <- setDT(data_for_plotting$genes_filtered_hyp5)
+control_data <- data_data_table[Sample != sample_of_interest]
+# Check the proportion of controls where P_Values_Hyp1 for a gene are below the masking threshold and NormalizedFractionDifference > 0
+gene_significant_in_controls_hyp1 <- control_data[, .(
+  ProportionSignificant = sum(P_Value_Hyp1 < masking_thresh & NormalizedFractionDifference > 0) / .N
+), by = .(associated_gene)]
+# Filter to keep only those genes where ProportionSignificant is greater than or equal to 0.5
+significant_genes <- gene_significant_in_controls_hyp1[ProportionSignificant >= hyp1_sig_proportion_masking_threshold, associated_gene]
+# Remove these genes from data
+data <- subset(data, !(associated_gene %in% significant_genes))
 
+data <- subset(data, Sample == sample_of_interest)
 
-# Keep isoforms that have significant hyp1 p-values ONLY in the sample of interest.
+data <- subset(data, P_Value_Hyp5 < significance_thresh)
 
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
+data$PhenotypesNotEmpty <- data$PhenotypesNotEmpty <- data$Phenotypes != "" & !is.na(data$Phenotypes)
 
 # Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
+volcano_plot <- ggplot(data, aes(x = (proportion_in_Bin1_cyclo - proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo), y = -log10(P_Value_Hyp5))) +
   geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
+  geom_point(data = subset(data, associated_gene %in% genes_of_interest), color = "blue", size = 3) +  # Highlighted gene point
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 worst, isoforms only significant for hyp1 in sample of interest")) +
+  labs(x = "(proportion_in_Bin1_cyclo − proportion_in_Bin1_noncyclo) / (proportion_in_Bin1_cyclo + proportion_in_Bin1_noncyclo)", y = "-log10(P_Value_Hyp5)", title = paste(sample_of_interest)) +
   scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
   theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
+  theme(legend.title = element_blank(),
+        axis.title.x = element_text(size = 7))  
 
 # Add the label for the gene of interest using geom_text()
 # The hjust and vjust arguments should be negative to position the label correctly above the point
 volcano_plot_with_label <- volcano_plot +
   geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
+    data = subset(data, associated_gene %in% genes_of_interest),
     aes(label = associated_gene),
-    hjust = 0, vjust = -1,
+    hjust = 0.5, vjust = 1.5,
     size = 2,
     color = "Green",
     fontface = "bold"
   )
 
 # Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_keepHyp1OnlySig_TPM_Norm.pdf")
+#print(volcano_plot_with_label)
+title <- paste(sample_of_interest,".pdf")
 ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+ggsave(filename = "Hyp5.png", plot = volcano_plot_with_label, width = 8, height = 6, dpi = 300)
 
 
-##################################################
-# Hypothesis 2. _largestP_hypothesis_2_keepHyp1OnlySig_Normalized_Frac.pdf
-##################################################
-
-# LEFT OFF HERE. Will need to do hypothesis 1 p-values per gene. 
-
-# Replace 'gene_of_interest' with the name of the gene you want to label in the plot
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = NormalizedFractionDifference, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "NormalizedCycloFrac - NormalizedNoncycloFrac", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 Fisher, removed isoforms sig in controls")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_keepHyp1OnlySig_Normalized_Frac.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+data <- subset(data, associated_gene %in% genes_of_interest)
+# Save the data as a dataframe.
+to_save_into_rds$hyp5 <- data
 
 
-##################################################
-# Plot if isoforms are significant across all comparison with sample of interest. 
-##################################################
-
-##################################################
-# Hypothesis 2 per gene
-##################################################
-
-##################################################
-# Hypothesis 2. _largestP_hypothesis_2_TPM_Norm_perGene_hyp2_sig_for_all_comparisons.pdf
-##################################################
-
-
-# Subsetting the dataframe
-filtered_df_for_sample_of_interest <- results_hypothesis_2_per_gene %>%
-  filter(Sample1 == sample_of_interest | Sample2 == sample_of_interest)
-
-filtered_df_for_sample_of_interest_all_sig_comparisons <- filtered_df_for_sample_of_interest %>%
-  group_by(Isoform) %>%
-  filter(all(P_Value < p_value_thresh)) %>%
-  ungroup()
-
-isoforms_sig_across_all_comparisons <- unique(filtered_df_for_sample_of_interest_all_sig_comparisons$Isoform)
-
-data <- subset(collapsed_by_gene_merged_data_omim_added, (Isoform %in% isoforms_sig_across_all_comparisons))
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM, y = -log10(Combined_Hypothesis_2_Worst_P_Value))) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "(Noncyclo_TPM - Avg_Noncyclo_TPM)/Avg_Noncyclo_TPM", y = "-log10(Combined_Hypothesis_2_Worst_P_Value)", title = paste(sample_of_interest, "Combined hypothesis 2 worst p-value")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_largestP_hypothesis_2_TPM_Norm_perGene_hyp2_sig_for_all_comparisons.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
-
-##################################################
-# Plotting isoform vs gene
-##################################################
-
-##################################################
-# _isoform_vs_gene_Cyclo_TPM_norm.pdf
-##################################################
-
-
-data <- subset(merged_data_omim_added_removed_common_hypothesis_1_isoforms, Hypothesis_1_P_values < p_value_thresh)
-
-# Create the volcano plot using ggplot2
-volcano_plot <- ggplot(data, aes(x = (Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM, y = Gene_Cyclo_TPM_norm)) +
-  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
-  geom_point(data = subset(data, associated_gene == gene_of_interest), color = "blue", size = 3) +  # Highlighted gene point
-  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
-  labs(x = "Isoform (Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM", y = "Gene (Cyclo_TPM - Avg_Cyclo_TPM)/Avg_Cyclo_TPM", title = paste(sample_of_interest, "Cyclo Z-score")) +
-  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
-  theme_minimal() +
-  theme(legend.title = element_blank())  # Hide the legend title (optional)
-
-# Add the label for the gene of interest using geom_text()
-# The hjust and vjust arguments should be negative to position the label correctly above the point
-volcano_plot_with_label <- volcano_plot +
-  geom_text(
-    data = subset(data, associated_gene == gene_of_interest),
-    aes(label = associated_gene),
-    hjust = 0, vjust = -1,
-    size = 2,
-    color = "Green",
-    fontface = "bold"
-  )
-
-# Print the plot
-# print(volcano_plot_with_label)
-title <- paste(sample_of_interest,"_isoform_vs_gene_Cyclo_TPM_norm.pdf")
-ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+saveRDS(to_save_into_rds, "markdown_tables.rds")
 
 
