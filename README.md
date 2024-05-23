@@ -15,7 +15,7 @@ performed on bulk [Isoseq](https://isoseq.how/) data:
 
 <div style="text-align: center;">
 
-<img src="Preprocessing.png" width="70%" height="300px" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Preprocessing.png" width="70%" height="300px" />
 
 </div>
 
@@ -51,7 +51,7 @@ treated sample.
 
 <div style="text-align: center;">
 
-<img src="CHX_diagram.png" width="50%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/CHX_diagram.png" width="50%" />
 
 </div>
 
@@ -60,7 +60,7 @@ Here are specifics regarding the statisical testing using a chi-square
 
 <div style="text-align: center;">
 
-<img src="Hyp1_stats.png" width="50%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Hyp1_stats.png" width="50%" />
 
 </div>
 
@@ -73,7 +73,7 @@ genetic cause.
 
 <div style="text-align: center;">
 
-<img src="../Examples/example1/5.Plotting/Hyp1.png" width="70%" />
+<img src="Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/Hyp1.png" width="70%" />
 
 </div>
 
@@ -233,7 +233,7 @@ Here are specifics regarding the statisical testing using a chi-square
 
 <div style="text-align: center;">
 
-<img src="Hyp2_stats.png" width="50%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Hyp2_stats.png" width="50%" />
 
 </div>
 
@@ -243,7 +243,7 @@ related to NMD.
 
 <div style="text-align: center;">
 
-<img src="../Examples/example1/5.Plotting/Hyp2_gene_below.png" width="70%" />
+<img src="Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/Hyp2_gene_below.png" width="70%" />
 
 </div>
 
@@ -324,7 +324,7 @@ Here are specifics regarding the statisical testing using a chi-square
 
 <div style="text-align: center;">
 
-<img src="Hyp3_stats.png" width="50%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Hyp3_stats.png" width="50%" />
 
 </div>
 
@@ -338,7 +338,7 @@ hypothesis 2.
 
 <div style="text-align: center;">
 
-<img src="../Examples/example1/5.Plotting/Hyp3_isoform_above.png" width="70%" />
+<img src="Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/Hyp3_isoform_above.png" width="70%" />
 
 </div>
 
@@ -640,7 +640,7 @@ Here is a diagram illustrating the binning process:
 
 <div style="text-align: center;">
 
-<img src="Bin_diagram.png" width="50%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Bin_diagram.png" width="50%" />
 
 </div>
 
@@ -649,7 +649,7 @@ Here are specifics regarding the statisical testing using a chi-square
 
 <div style="text-align: center;">
 
-<img src="Hyp5_stats.png" width="50%" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Hyp5_stats.png" width="50%" />
 
 </div>
 
@@ -661,7 +661,7 @@ isoforms that undergo NMD.
 
 <div style="text-align: center;">
 
-<img src="../Examples/example1/5.Plotting/Hyp5.png" width="70%" />
+<img src="Cyclo_noncyclo_comparison/Examples/example1/5.Plotting/Hyp5.png" width="70%" />
 
 </div>
 
@@ -763,13 +763,13 @@ To validate the effects of NMD, PCA was performed on the gene-level
 
 <div style="width: 48%; text-align: center;">
 
-<img src="PCA_gene_level.pdf.png" width="100%" height="300px" />
+<img src="Cyclo_noncyclo_comparison/Markdown/PCA_gene_level.pdf.png" width="100%" height="300px" />
 
 </div>
 
 <div style="width: 48%; text-align: center;">
 
-<img src="PCA_isoform_level.pdf.png" width="100%" height="300px" />
+<img src="Cyclo_noncyclo_comparison/Markdown/PCA_isoform_level.pdf.png" width="100%" height="300px" />
 
 </div>
 
