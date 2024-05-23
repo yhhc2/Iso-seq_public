@@ -19,6 +19,8 @@ Cyclo_noncyclo_comparison="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_p
 Isoform_analysis_p_value_generation="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/1.Isoform/Isoform_analysis_p_value_generation.R"
 Group_by_abundance_in_noncyclo_genome_wide="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/3.Novel_iso_abundance_in_gene/Group_by_abundance_in_noncyclo_genome_wide.R"
 PCA="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/3.Compare_samples/4.PCA/PCA.R"
+helper_script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Cyclo_noncyclo_comparison_general_collapse_isoform.sh"
+Filter_for_plotting_script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/4.Filter_for_plotting/Filter_results_for_plotting.R"
 
 # Directories:
 Split_read_stats="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/1.Split_read_stats"
@@ -27,12 +29,12 @@ Compare_samples_Isoform="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_pub
 Compare_samples_Gene="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/3.Compare_samples/2.Gene"
 Compare_samples_Novel_iso_abundance_in_gene="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/3.Compare_samples/3.Novel_iso_abundance_in_gene"
 Compare_samples_PCA="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/3.Compare_samples/4.PCA"
+Filter_for_plotting_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/4.Filter_for_plotting"
 
 # Input files:
 read_stat_file="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/6-collapsed/collapsed.read_stat.txt"
 classification_file="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/7-pigeon/pigeon_classification.txt"
 sample_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Examples/example1/Inputs/Sample_names_and_bam_locations.tsv"
-helper_script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/2.Collapse_counts/Cyclo_noncyclo_comparison_general_collapse_isoform.sh"
 omim_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq/Cyclo_noncyclo_comparison/Merge_more_than_two_bams/3.15.24_merge_aligned_bams/4.Comparison_between_samples/Combined_OMIM_Isoform_4.3.24/genemap2_7.21.23.txt"
 
 #########################################################
@@ -184,5 +186,23 @@ Rscript "$PCA" \
 
 
 
+#########################################################
+# 4.Filter_for_plotting
+#########################################################
+
+mkdir -p "$Filter_for_plotting_dir"
+cd "$Filter_for_plotting_dir"
+
+#Rscript "$Filter_for_plotting_script" \
+#  <isoform_file> \
+#  <gene_file> \
+#  > output.txt \
+#  2>&1
+
+Rscript "$Filter_for_plotting_script" \
+  "${Compare_samples_Isoform}/data_combined_full.csv" \
+  "${Compare_samples_Novel_iso_abundance_in_gene}/data_combined_full_gene_with_Hyp5.csv" \
+  > output.txt \
+  2>&1
 
 
