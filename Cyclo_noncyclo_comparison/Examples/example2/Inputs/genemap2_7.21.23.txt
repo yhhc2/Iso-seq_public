@@ -1,0 +1,8 @@
+Chromosome	Genomic Position Start	Genomic Position End	Cyto Location	Computed Cyto Location	MIM Number	Gene Symbols	Gene Name	Approved Gene Symbol	Entrez Gene ID	Ensembl Gene ID	Comments	Phenotypes	Mouse Gene Symbol/ID
+chr1	1	27600000	1p36		607413	AD7CNTP	Alzheimer disease neuronal thread protein						
+chr1	1	27600000	1p36		612367	ALPQTL2	"Alkaline phosphatase, plasma level of, QTL 2"		100196914		linkage with rs1780324	"{Alkaline phosphatase, plasma level of, QTL 2}, 612367 (2)"	
+chr1	1	123400001	1p		606788	ANON1	"Anorexia nervosa, susceptibility to, 1"		171514			"{Anorexia nervosa, susceptibility to, 1}, 606788 (2)"	
+chr1	1	27600000	1p36		605462	BCC1	"Basal cell carcinoma, susceptibility to, 1"		100307118		associated with rs7538876	"{Basal cell carcinoma, susceptibility to, 1}, 605462 (2)"	
+chr1	1	27600000	1p36		606928	BMND3	Bone mineral density QTL 3		246259		?another locus at 3p21	"[Bone mineral density QTL 3], 606928 (2)"	
+chr1	1	2300000	1p36.33		618815	"C1DUPp36.33, DUP1p36.33"	"Chromosome 1p36.33 duplication syndrome, ATAD3 gene cluster"					"Chromosome 1p36.33 duplication syndrome, ATAD3 gene cluster, 618815 (4), Autosomal dominant"	
+chr1	1	27600000	1p36		155600	"CMM, MLM, DNS"	Cutaneous malignant melanoma/dysplastic nevus		1243		some linkage studies negative; see 9p	"{Melanoma, cutaneous malignant, 1}, 155600 (2), Autosomal dominant"	
