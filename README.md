@@ -12,7 +12,8 @@ git clone https://github.com/yhhc2/Iso-seq_public.git
 ## Usage
 
 Please view the Complete_workflow_example2.sh file in the example2
-folder to see a step-by-step usage of this package with dummy data.
+folder to see a step-by-step usage of this package with simulated dummy
+data.
 
 Cyclo_noncyclo_comparison/Examples/example2/Complete_workflow_example2.sh
 
@@ -78,7 +79,7 @@ Here are specifics regarding the statisical testing using a chi-square
 
 </div>
 
-For example, isoforms in HARS1 is known to undergo altered splicing
+For example, an isoform in HARS1 is known to undergo altered splicing
 which results in NMD in UDN212054 As a result, treatment with CHX causes
 HARS1 isoforms to show up as significant under hypothesis 1. However,
 EDN1 was not previously known to harbor variants that result in NMD in
@@ -236,9 +237,9 @@ isolation. Don’t we need the cyclo reads to say anything about NMD? And
 you’re totally right, we would need the cyclo reads to study NMD.
 However, NMD isn’t the only way transcripts can be affected by genetic
 variants. Transcripts can also just have lower expression due to
-regulatory variants for example. So we wanted a hypothesis that can also
+regulatory variants for example, so we wanted a hypothesis that can also
 allow us to find transcripts that have lower or higher expression due to
-things other than NMD. Which is why we came up with hypothesis 2, which
+things other than NMD. This is why we came up with hypothesis 2, which
 allows us to find isoforms that have lower/higher expression regardless
 of NMD.
 
@@ -788,6 +789,11 @@ included in the analysis.
 <img src="Cyclo_noncyclo_comparison/Markdown/PCA_isoform_level.pdf.png" width="60%" />
 
 </div>
+
+### Shiny App Visualizations
+
+Please visit this site to see an example of how to more interactively
+visualize the results: <https://stergachis.shinyapps.io/fire_peaks/>
 
 ## Acknowledgements
 
