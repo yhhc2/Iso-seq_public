@@ -767,9 +767,9 @@ TRUE
 
 </div>
 
-## Validating effects of NMD
+## Validating effects of CHX
 
-To validate the effects of NMD, PCA was performed on the gene-level and
+To validate the effects of CHX, PCA was performed on the gene-level and
 isoform-level expression matrix for the 13 patients (26 samples)
 included in the analysis.
 

@@ -191,9 +191,9 @@ knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Hyp5.png")
 ```
 </div>
 
-## Validating effects of NMD
+## Validating effects of CHX
 
-To validate the effects of NMD, PCA was performed on the gene-level and isoform-level expression matrix for the 13 patients (26 samples) included in the analysis. 
+To validate the effects of CHX, PCA was performed on the gene-level and isoform-level expression matrix for the 13 patients (26 samples) included in the analysis. 
 
 ### Gene-Level
 <div style="text-align: center;" >
