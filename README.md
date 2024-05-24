@@ -3,10 +3,22 @@ NMDSeqR
 Hank Cheng
 2024-05-23
 
+## Installation
+
+``` bash
+git clone https://github.com/yhhc2/Iso-seq_public.git
+```
+
 ## Usage
 
 Please view the Complete_workflow_example2.sh file in the example2
 folder to see a step-by-step usage of this package with dummy data.
+
+Cyclo_noncyclo_comparison/Examples/example2/Complete_workflow_example2.sh
+
+## License
+
+TBD
 
 ## Introduction
 
@@ -66,7 +78,7 @@ Here are specifics regarding the statisical testing using a chi-square
 
 </div>
 
-For example, isoforms in HARS1 is known to undergo alternative splicing
+For example, isoforms in HARS1 is known to undergo altered splicing
 which results in NMD in UDN212054 As a result, treatment with CHX causes
 HARS1 isoforms to show up as significant under hypothesis 1. However,
 EDN1 was not previously known to harbor variants that result in NMD in
@@ -655,11 +667,11 @@ Here are specifics regarding the statisical testing using a chi-square
 
 </div>
 
-For example, MFN2 is known to have several isoforms that have
-alternative splicing and results in NMD. Individually, these novel
-isoforms have low read counts. However, when combined together at the
-gene level, we are able to pick out MFN2 as a gene containing novel
-isoforms that undergo NMD.
+For example, MFN2 is known to have several isoforms that have altered
+splicing and results in NMD. Individually, these novel isoforms have low
+read counts. However, when combined together at the gene level, we are
+able to pick out MFN2 as a gene containing novel isoforms that undergo
+NMD.
 
 <div style="text-align: center;">
 
