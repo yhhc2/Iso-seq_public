@@ -79,28 +79,138 @@ genetic cause.
 
 </div>
 
-<style>
-/* Apply custom font size to all tables */
-table {
-  font-size: 10px;  /* Adjust the font size as needed */
-  margin-left: auto;
-  margin-right: auto;
-}
-&#10;/* Optional: Customize other aspects of the table */
-table th, table td {
-  padding: 5px;  /* Adjust cell padding as needed */
-}
-</style>
-
 <div style="text-align: center;">
 
-| Isoform_PBid | Sample    | associated_gene | P_Value_Hyp1 |  Cyclo_TPM | Noncyclo_TPM | NormalizedFractionDifference | Phenotypes                                                                                                                                                                         | PhenotypesNotEmpty |
-|:-------------|:----------|:----------------|-------------:|-----------:|-------------:|-----------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------------------|
-| PB.33489.130 | UDN212054 | EDN1            |    0.0443832 |   1.074748 |     0.000000 |                    1.0000000 | {High density lipoprotein cholesterol level QTL 7} (3); Question mark ears, isolated, 612798 (3), Autosomal dominant; Auriculocondylar syndrome 3, 615706 (3), Autosomal recessive | TRUE               |
-| PB.33489.108 | UDN212054 | EDN1            |    0.0000000 | 834.004603 |     9.369151 |                    0.9777817 | {High density lipoprotein cholesterol level QTL 7} (3); Question mark ears, isolated, 612798 (3), Autosomal dominant; Auriculocondylar syndrome 3, 615706 (3), Autosomal recessive | TRUE               |
-| PB.31662.153 | UDN212054 | HARS1           |    0.0000000 |  13.255228 |     0.000000 |                    1.0000000 | Charcot-Marie-Tooth disease, axonal, type 2W, 616625 (3), Autosomal dominant; Usher syndrome type 3B, 614504 (3), Autosomal recessive                                              | TRUE               |
-
+<table class="table" style="font-size: 10px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
 UDN212054
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Isoform_PBid
+</th>
+<th style="text-align:left;">
+Sample
+</th>
+<th style="text-align:left;">
+associated_gene
+</th>
+<th style="text-align:right;">
+P_Value_Hyp1
+</th>
+<th style="text-align:right;">
+Cyclo_TPM
+</th>
+<th style="text-align:right;">
+Noncyclo_TPM
+</th>
+<th style="text-align:right;">
+NormalizedFractionDifference
+</th>
+<th style="text-align:left;">
+Phenotypes
+</th>
+<th style="text-align:left;">
+PhenotypesNotEmpty
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+PB.33489.130
+</td>
+<td style="text-align:left;">
+UDN212054
+</td>
+<td style="text-align:left;">
+EDN1
+</td>
+<td style="text-align:right;">
+0.0443832
+</td>
+<td style="text-align:right;">
+1.074748
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:left;">
+{High density lipoprotein cholesterol level QTL 7} (3); Question mark
+ears, isolated, 612798 (3), Autosomal dominant; Auriculocondylar
+syndrome 3, 615706 (3), Autosomal recessive
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PB.33489.108
+</td>
+<td style="text-align:left;">
+UDN212054
+</td>
+<td style="text-align:left;">
+EDN1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+834.004603
+</td>
+<td style="text-align:right;">
+9.369151
+</td>
+<td style="text-align:right;">
+0.9777817
+</td>
+<td style="text-align:left;">
+{High density lipoprotein cholesterol level QTL 7} (3); Question mark
+ears, isolated, 612798 (3), Autosomal dominant; Auriculocondylar
+syndrome 3, 615706 (3), Autosomal recessive
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PB.31662.153
+</td>
+<td style="text-align:left;">
+UDN212054
+</td>
+<td style="text-align:left;">
+HARS1
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+13.255228
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:left;">
+Charcot-Marie-Tooth disease, axonal, type 2W, 616625 (3), Autosomal
+dominant; Usher syndrome type 3B, 614504 (3), Autosomal recessive
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+</tbody>
+</table>
 
 </div>
 
