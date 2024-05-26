@@ -118,6 +118,8 @@ colnames(data) <- expression_matrix[, 1]
 treatment_status <- ifelse(grepl("_Cyclo", rownames(data)), 1, 0)
 data$treatment_status <- factor(treatment_status)
 
+print(head(data))
+
 # Split the data into features and target
 features <- data[, -ncol(data)]  # All columns except the last one (treatment_status)
 target <- data$treatment_status  # The last column (treatment_status)
