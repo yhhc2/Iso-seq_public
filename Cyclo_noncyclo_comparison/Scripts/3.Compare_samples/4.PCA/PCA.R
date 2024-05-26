@@ -112,8 +112,13 @@ library(randomForest)
 # And `treatment_status` is a vector indicating which samples were treated with cycloheximide (1 for treated, 0 for not)
 
 # Combine the data into a single data frame
-treatment_status <- ifelse(grepl("_Cyclo", rownames(data_for_pca)), 1, 0)
 data <- as.data.frame(data_for_pca)
+colnames(data) <- data[1, ]
+data <- data[-1, ]
+# Ensure the row names are preserved for treatment status extraction
+rownames(data) <- rownames(expression_matrix)[-1]
+
+treatment_status <- ifelse(grepl("_Cyclo", rownames(data_for_pca)), 1, 0)
 data$treatment_status <- factor(treatment_status)
 
 # Split the data into features and target
