@@ -113,7 +113,7 @@ library(randomForest)
 
 # Combine the data into a single data frame
 treatment_status <- ifelse(grepl("_Cyclo", rownames(data_for_pca)), 1, 0)
-data <- data_for_pca
+data <- as.data.frame(data_for_pca)
 data$treatment_status <- treatment_status
 
 # Split the data into features and target
