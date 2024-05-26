@@ -114,6 +114,7 @@ library(randomForest)
 # Combine the data into a single data frame
 data <- as.data.frame(data_for_pca)
 
+print("head(data) before adding colnames")
 print(head(data))
 
 colnames(data) <- as.character(expression_matrix[, 1])
@@ -121,6 +122,7 @@ colnames(data) <- as.character(expression_matrix[, 1])
 treatment_status <- ifelse(grepl("_Cyclo", rownames(data)), 1, 0)
 data$treatment_status <- factor(treatment_status)
 
+print("head(data) after adding colnames")
 print(head(data))
 
 # Split the data into features and target
