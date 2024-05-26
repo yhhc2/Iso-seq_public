@@ -113,7 +113,7 @@ library(randomForest)
 
 # Combine the data into a single data frame
 data <- as.data.frame(data_for_pca)
-colnames(data) <- data[1, ]
+colnames(data) <- expression_matrix[, 1]
 data <- data[-1, ]
 # Ensure the row names are preserved for treatment status extraction
 rownames(data) <- rownames(data_for_pca)[-1]
