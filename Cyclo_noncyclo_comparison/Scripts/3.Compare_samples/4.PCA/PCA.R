@@ -100,3 +100,54 @@ print(pca_data)
 # Save the plot
 ggsave(plot_title, plot = pca_plot, width = 8, height = 6)
 ggsave(paste0(plot_title,".png"), plot = pca_plot, width = 8, height = 6, dpi = 300)
+
+
+################################################
+# Random Forest for feature selection
+################################################
+# Load necessary libraries
+library(randomForest)
+
+# Assuming `expression_matrix` is your data frame with samples as rows and genes as columns
+# And `treatment_status` is a vector indicating which samples were treated with cycloheximide (1 for treated, 0 for not)
+
+# Combine the data into a single data frame
+treatment_status <- ifelse(grepl("_Cyclo", rownames(data_for_pca)), 1, 0)
+data <- data_for_pca
+data$treatment_status <- treatment_status
+
+# Split the data into features and target
+features <- data[, -ncol(data)]  # All columns except the last one (treatment_status)
+target <- data$treatment_status  # The last column (treatment_status)
+
+# Train the random forest model
+set.seed(123)  # For reproducibility
+rf_model <- randomForest(x = features, y = target, importance = TRUE, ntree = 500)
+
+
+# Print the model to see the error rates
+print(rf_model)
+
+# Extract and print the OOB error rate
+oob_error_rate <- rf_model$err.rate[nrow(rf_model$err.rate), "OOB"]
+cat("\nOOB Error Rate: ", round(oob_error_rate, 3), "\n")
+
+# Evaluate feature importance
+importance_scores <- importance(rf_model)
+importance_df <- data.frame(Gene = rownames(importance_scores), Importance = importance_scores[, "MeanDecreaseGini"])
+
+# Sort by importance
+importance_df <- importance_df[order(importance_df$Importance, decreasing = TRUE), ]
+
+# Display the top 10 most important genes
+print(head(importance_df, 10))
+
+# Plot the importance of the top 10 genes
+library(ggplot2)
+ggplot(importance_df[1:10, ], aes(x = reorder(Gene, Importance), y = Importance)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  xlab("Gene") +
+  ylab("Importance") +
+  ggtitle("Top 10 Most Important Genes for Predicting Cycloheximide Treatment")
+
