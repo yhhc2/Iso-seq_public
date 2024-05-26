@@ -114,7 +114,7 @@ library(randomForest)
 # Combine the data into a single data frame
 treatment_status <- ifelse(grepl("_Cyclo", rownames(data_for_pca)), 1, 0)
 data <- as.data.frame(data_for_pca)
-data$treatment_status <- treatment_status
+data$treatment_status <- factor(treatment_status)
 
 # Split the data into features and target
 features <- data[, -ncol(data)]  # All columns except the last one (treatment_status)
@@ -130,7 +130,7 @@ print(rf_model)
 
 # Extract and print the OOB error rate
 oob_error_rate <- rf_model$err.rate[nrow(rf_model$err.rate), "OOB"]
-cat("\nOOB Error Rate: ", round(oob_error_rate, 3), "\n")
+cat("\nOOB Error Rate: ", oob_error_rate, "\n")
 
 # Evaluate feature importance
 importance_scores <- importance(rf_model)
