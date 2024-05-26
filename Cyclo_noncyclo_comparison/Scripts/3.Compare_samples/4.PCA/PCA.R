@@ -145,15 +145,15 @@ importance_df <- data.frame(Gene = rownames(importance_scores), Importance = imp
 importance_df <- importance_df[order(importance_df$Importance, decreasing = TRUE), ]
 
 # Display the top 10 most important genes
-print(head(importance_df, 20))
+print(head(importance_df, 30))
 
 # Create the plot and assign it to a variable
-plot <- ggplot(importance_df[1:20, ], aes(x = reorder(Gene, Importance), y = Importance)) +
+plot <- ggplot(importance_df[1:30, ], aes(x = reorder(Gene, Importance), y = Importance)) +
   geom_bar(stat = "identity") +
   coord_flip() +
   xlab("Gene") +
   ylab("Importance") +
-  ggtitle("Top 20 Most Important Genes for Predicting Cycloheximide Treatment")
+  ggtitle("Top 30 Most Important Genes for Predicting Cycloheximide Treatment")
 
 # Save the plot as a PNG file
 ggsave("gene_importance_plot.png", plot = plot, width = 10, height = 8)
