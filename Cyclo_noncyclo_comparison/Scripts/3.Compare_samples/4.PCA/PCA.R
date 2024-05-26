@@ -105,32 +105,23 @@ ggsave(paste0(plot_title,".png"), plot = pca_plot, width = 8, height = 6, dpi = 
 ################################################
 # Random Forest for feature selection
 ################################################
-
+# Load necessary libraries
 library(randomForest)
 
-# Ensure the first row of expression_matrix is set as column names and then remove it
-column_names <- as.character(expression_matrix[1, ])
-expression_matrix <- expression_matrix[-1, ]
-colnames(expression_matrix) <- column_names
+# Assuming `expression_matrix` is your data frame with samples as rows and genes as columns
+# And `treatment_status` is a vector indicating which samples were treated with cycloheximide (1 for treated, 0 for not)
 
-# Convert expression_matrix to a data frame
-expression_matrix <- as.data.frame(expression_matrix)
+# Combine the data into a single data frame
+data <- as.data.frame(data_for_pca)
 
-# Remove the Isoform_PBid column to create a matrix of expression data
-expression_data <- expression_matrix[, -1]
+print(head(data))
 
-# Transpose the data to have samples as rows and genes as columns
-expression_data <- t(expression_data)
+colnames(data) <- as.character(expression_matrix[, 1])
 
-# Create a data frame from the transposed data
-data <- as.data.frame(expression_data)
-
-# Add row names to the data frame (the sample names)
-rownames(data) <- colnames(expression_matrix)[-1]
-
-# Extract the treatment status from the row names
 treatment_status <- ifelse(grepl("_Cyclo", rownames(data)), 1, 0)
 data$treatment_status <- factor(treatment_status)
+
+print(head(data))
 
 # Split the data into features and target
 features <- data[, -ncol(data)]  # All columns except the last one (treatment_status)
@@ -139,6 +130,7 @@ target <- data$treatment_status  # The last column (treatment_status)
 # Train the random forest model
 set.seed(123)  # For reproducibility
 rf_model <- randomForest(x = features, y = target, importance = TRUE, ntree = 500)
+
 
 # Print the model to see the error rates
 print(rf_model)
@@ -154,7 +146,7 @@ importance_df <- data.frame(Gene = rownames(importance_scores), Importance = imp
 # Sort by importance
 importance_df <- importance_df[order(importance_df$Importance, decreasing = TRUE), ]
 
-# Display the top 30 most important genes
+# Display the top 10 most important genes
 print(head(importance_df, 30))
 
 # Create the plot and assign it to a variable
