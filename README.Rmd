@@ -37,9 +37,9 @@ This package takes in data from bulk-Isoseq processed with and without cyclohexi
 
 Prior to using this package, the following data processing needs to be performed on bulk [Isoseq](https://isoseq.how/) data:
 <div style="text-align: center;">
-```{r, echo=FALSE, out.width='70%', out.height='300px'}
+```{r, echo=FALSE, out.width='80%'}
 # Include graphic explaining experimental paradigm here.
-knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Preprocessing.png")
+knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Preprocessing_V2.png")
 ```
 </div>
 

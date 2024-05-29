@@ -33,7 +33,7 @@ performed on bulk [Isoseq](https://isoseq.how/) data:
 
 <div style="text-align: center;">
 
-<img src="Cyclo_noncyclo_comparison/Markdown/Preprocessing.png" width="70%" height="300px" />
+<img src="Cyclo_noncyclo_comparison/Markdown/Preprocessing_V2.png" width="80%" />
 
 </div>
 
