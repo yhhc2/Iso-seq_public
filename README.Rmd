@@ -79,7 +79,6 @@ knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Hyp1_stats.png")
 ```
 </div>
 
-
 For example, an isoform in HARS1 is known to undergo altered splicing which results in NMD in UDN212054 As a result, treatment with CHX causes HARS1 isoforms to show up as significant under hypothesis 1. However, EDN1 was not previously known to harbor variants that result in NMD in this patient, so EDN1 is now a potential candidate for evaluating the genetic cause.
 
 <div style="text-align: center;">
@@ -111,6 +110,8 @@ knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Hyp2_stats.png")
 ```
 </div>
 
+For each isoform/gene in a patient, we will get multiple p-values. One p-value for every comparison with a control. For example, if we have 12 control samples, then we will get 12 p-values. To reduce noise, we to decide to only plot the least significant p-value. 
+
 For example, VTA1 is known to have decreased expression in UDN687128. Furthermore, the decrease in expression is allele-specific and not related to NMD.
 
 <div style="text-align: center;">
@@ -139,6 +140,8 @@ knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Hyp3_stats.png")
 ```
 </div>
 
+For each isoform/gene in a patient, we will get multiple p-values. One p-value for every comparison with a control. For example, if we have 12 control samples, then we will get 12 p-values. To reduce noise, we to decide to only plot the least significant p-value. 
+
 For example, SET isoforms are known to have splicing variants that result in NMD in UDN215640. UDN215640 also has SET isoforms with splicing variants that do not undergo NMD, as a result, you can notice that there are some isoforms that are highlighted in SET where the cyclo TPM is not greater than the noncyclo TPM. While these isoforms are shown here as being captured by hypothesis 3, they are also captured by hypothesis 2. 
 
 <div style="text-align: center;">
@@ -157,7 +160,7 @@ knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Hyp3_isoform_above.p
 
 ## Hypothesis 5: Genes with novel isoforms
 
-Instead of looking at isoforms individually like we did in hypothesis 1, we wanted to have a method of grouping novel isoforms together. This way, we increase the statistical power to determine whether novel isoforms in a gene is undergoing NMD. We make the assumption that isoforms that have low/no abundance in the noncyclo sample are isoforms that are “novel” and likely ones that underwent NMD. We want to group these together into a single bin so that we have more power for statistical testing. 
+Instead of looking at isoforms individually like we did in hypothesis 1, we wanted to have a method of grouping novel isoforms together. This way, we increase the statistical power to determine whether novel isoforms in a gene is undergoing NMD. We make the assumption that isoforms that have low/no abundance in the noncyclo sample are isoforms that are “novel” and likely ones that underwent NMD. We want to group these together into a single bin so that we have more power for statistical testing. "Novel" refers here to what is novel in the cyclo sample that is not seen in the noncyclo sample. 
 
 Here is a diagram illustrating the binning process:
 <div style="text-align: center;">
@@ -193,7 +196,7 @@ knitr::include_graphics("Cyclo_noncyclo_comparison/Markdown/Hyp5.png")
 
 ## Validating effects of CHX
 
-To validate the effects of CHX, PCA was performed on the gene-level and isoform-level expression matrix for the 13 patients (26 samples) included in the analysis. 
+To validate the effects of CHX, PCA was performed on the gene-level and isoform-level expression matrix for the 13 patients (26 samples) included in the analysis. The clusters are being formed based on CHX treatment, which supports the idea that sample variability is not enough to prevent us from pulling out findings that are a result of the CHX treatment.
 
 ### Gene-Level
 <div style="text-align: center;" >

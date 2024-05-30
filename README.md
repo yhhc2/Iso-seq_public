@@ -252,6 +252,11 @@ Here are specifics regarding the statisical testing using a chi-square
 
 </div>
 
+For each isoform/gene in a patient, we will get multiple p-values. One
+p-value for every comparison with a control. For example, if we have 12
+control samples, then we will get 12 p-values. To reduce noise, we to
+decide to only plot the least significant p-value.
+
 For example, VTA1 is known to have decreased expression in UDN687128.
 Furthermore, the decrease in expression is allele-specific and not
 related to NMD.
@@ -342,6 +347,11 @@ Here are specifics regarding the statisical testing using a chi-square
 <img src="Cyclo_noncyclo_comparison/Markdown/Hyp3_stats.png" width="50%" />
 
 </div>
+
+For each isoform/gene in a patient, we will get multiple p-values. One
+p-value for every comparison with a control. For example, if we have 12
+control samples, then we will get 12 p-values. To reduce noise, we to
+decide to only plot the least significant p-value.
 
 For example, SET isoforms are known to have splicing variants that
 result in NMD in UDN215640. UDN215640 also has SET isoforms with
@@ -649,7 +659,8 @@ isoforms in a gene is undergoing NMD. We make the assumption that
 isoforms that have low/no abundance in the noncyclo sample are isoforms
 that are “novel” and likely ones that underwent NMD. We want to group
 these together into a single bin so that we have more power for
-statistical testing.
+statistical testing. “Novel” refers here to what is novel in the cyclo
+sample that is not seen in the noncyclo sample.
 
 Here is a diagram illustrating the binning process:
 
@@ -772,7 +783,10 @@ TRUE
 
 To validate the effects of CHX, PCA was performed on the gene-level and
 isoform-level expression matrix for the 13 patients (26 samples)
-included in the analysis.
+included in the analysis. The clusters are being formed based on CHX
+treatment, which supports the idea that sample variability is not enough
+to prevent us from pulling out findings that are a result of the CHX
+treatment.
 
 ### Gene-Level
 
