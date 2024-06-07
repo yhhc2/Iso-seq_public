@@ -236,6 +236,56 @@ data <- subset(data, associated_gene %in% genes_of_interest)
 to_save_into_rds$hyp5 <- data
 
 
+##################################################
+# SET Hypothesis 2 isoform above median
+##################################################
+
+
+sample_of_interest <- "UDN215640"
+genes_of_interest <- c("SET")
+
+# Replace 'gene_of_interest' with the name of the gene you want to label in the plot
+data <- data_for_plotting$isoforms_filtered_hyp2_above_median
+
+data <- subset(data, Sample == sample_of_interest)
+
+data <- subset(data, Max_P_Value_Hyp2_above_median < significance_thresh)
+
+data$PhenotypesNotEmpty <- data$PhenotypesNotEmpty <- data$Phenotypes != "" & !is.na(data$Phenotypes)
+
+# Create the volcano plot using ggplot2
+volcano_plot <- ggplot(data, aes(x = `Noncyclo_Z_Score`, y = -log10(Max_P_Value_Hyp2_above_median))) +
+  geom_point(aes(color = PhenotypesNotEmpty), alpha = 0.6, size = 1) +  # Gray points with colors based on phenotypes
+  geom_point(data = subset(data, associated_gene %in% genes_of_interest), color = "blue", size = 3) +  # Highlighted gene point
+  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "red") + # Add significance threshold line
+  labs(x = "Noncyclo_Z_Score", y = "-log10(Max_P_Value_Hyp2_above_median)", title = paste(sample_of_interest)) +
+  scale_color_manual(values = c("FALSE" = "gray", "TRUE" = "red"), labels = c("No Phenotype", "Phenotype")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())  # Hide the legend title (optional)
+
+# Add the label for the gene of interest using geom_text()
+# The hjust and vjust arguments should be negative to position the label correctly above the point
+volcano_plot_with_label <- volcano_plot +
+  geom_text(
+    data = subset(data, associated_gene %in% genes_of_interest),
+    aes(label = associated_gene),
+    hjust = 0.5, vjust = 1.5,
+    size = 2,
+    color = "Green",
+    fontface = "bold"
+  )
+
+# Print the plot
+#print(volcano_plot_with_label)
+title <- paste(sample_of_interest,"_Hyp2.pdf")
+ggsave(title, plot = volcano_plot_with_label, width = 8, height = 6)
+ggsave(filename = "SET_Hyp2_isoform_above.png", plot = volcano_plot_with_label, width = 8, height = 6, dpi = 300)
+
+
+data <- subset(data, associated_gene %in% genes_of_interest)
+# Save the data as a dataframe.
+to_save_into_rds$SET_Hyp2_isoform_above <- data
+
 saveRDS(to_save_into_rds, "markdown_tables.rds")
 
 
