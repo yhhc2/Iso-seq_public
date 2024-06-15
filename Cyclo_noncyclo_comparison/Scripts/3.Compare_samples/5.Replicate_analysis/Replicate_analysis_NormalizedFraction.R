@@ -49,6 +49,8 @@ dt <- dt[Isoform_PBid %in% isoforms_to_keep]
 # Reshape the data table to create the expression matrix
 dt_long <- melt(dt, id.vars = c("Isoform_PBid", "Sample"), measure.vars = c("NormalizedFractionDifference"))
 
+print(head(dt_long))
+
 # Cast the long format back to a wide format where each gene has its own row and each sample its own column
 expression_matrix <- dcast(dt_long, Isoform_PBid ~ Sample, value.var = "NormalizedFractionDifference")
 
