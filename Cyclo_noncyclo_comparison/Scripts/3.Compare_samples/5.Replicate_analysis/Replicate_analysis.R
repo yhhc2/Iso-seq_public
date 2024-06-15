@@ -24,7 +24,6 @@ file_path <- args[1]
 count_threshold <- as.numeric(args[2])
 plot_title <- args[3]
 
-
 # Read the CSV file into a data table
 dt <- fread(file_path)
 
@@ -95,15 +94,216 @@ plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
   scale_y_continuous(limits = c(0, 5000))
 
 # Save the plot as a PNG file
-ggsave("UDN052264_replicate_analysis.png", plot = plot, width = 10, height = 8)
+ggsave("UDN052264_noncyclo_replicate_analysis.png", plot = plot, width = 10, height = 8)
 
 # Save the plot as a PDF file
-ggsave("UDN052264_replicate_analysis.pdf", plot = plot, width = 10, height = 8)
+ggsave("UDN052264_noncyclo_replicate_analysis.pdf", plot = plot, width = 10, height = 8)
+
+# Do the same thing but for cyclo:
+
+# Extract relevant columns for the scatter plot
+x_col <- grep("UDN052264_Cyclo_", colnames(expression_matrix), value = TRUE)
+y_col <- grep("UDN052264b_Cyclo_", colnames(expression_matrix), value = TRUE)
+
+# Check if both columns are found
+if (length(x_col) == 0 | length(y_col) == 0) {
+  stop("Required columns for scatter plot not found in the expression matrix.")
+}
+
+# Calculate correlation coefficient
+correlation <- cor(expression_matrix[[x_col]], expression_matrix[[y_col]], use = "complete.obs")
+
+# Create scatter plot
+plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
+  geom_point() +
+  labs(
+    title = paste0(plot_title, " (Correlation: ", round(correlation, 2), ")"),
+    x = paste0("Expression of ", x_col),
+    y = paste0("Expression of ", y_col)
+  ) +
+  theme_minimal() +
+  scale_x_continuous(limits = c(0, 5000)) +
+  scale_y_continuous(limits = c(0, 5000))
+
+# Save the plot as a PNG file
+ggsave("UDN052264_Cyclo_replicate_analysis.png", plot = plot, width = 10, height = 8)
+
+# Save the plot as a PDF file
+ggsave("UDN052264_Cyclo_replicate_analysis.pdf", plot = plot, width = 10, height = 8)
+
+
+################################################
+# Replicate analysis for UDN052264 with control
+################################################
+
+# Extract relevant columns for the scatter plot
+x_col <- grep("UDN052264_Noncyclo_", colnames(expression_matrix), value = TRUE)
+y_col <- grep("UDN0212054_Noncyclo_", colnames(expression_matrix), value = TRUE)
+
+# Check if both columns are found
+if (length(x_col) == 0 | length(y_col) == 0) {
+  stop("Required columns for scatter plot not found in the expression matrix.")
+}
+
+# Calculate correlation coefficient
+correlation <- cor(expression_matrix[[x_col]], expression_matrix[[y_col]], use = "complete.obs")
+
+# Create scatter plot
+plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
+  geom_point() +
+  labs(
+    title = paste0(plot_title, " (Correlation: ", round(correlation, 2), ")"),
+    x = paste0("Expression of ", x_col),
+    y = paste0("Expression of ", y_col)
+  ) +
+  theme_minimal() +
+  scale_x_continuous(limits = c(0, 5000)) +
+  scale_y_continuous(limits = c(0, 5000))
+
+# Save the plot as a PNG file
+ggsave("UDN052264_UDN212054_noncyclo_replicate_analysis.png", plot = plot, width = 10, height = 8)
+
+# Save the plot as a PDF file
+ggsave("UDN052264_UDN212054_noncyclo_replicate_analysis.pdf", plot = plot, width = 10, height = 8)
+
 
 ################################################
 # Replicate analysis for UDN212054
 ################################################
+# Make a scatter plot
+# If the column contains "UDN212054_" and "_Noncyclo_" use this as the x-axis values
+# If the column contains "UDN212054b_" and "_Noncyclo_" use this as the y-axis values
+
+# Extract relevant columns for the scatter plot
+x_col <- grep("UDN212054_Noncyclo_", colnames(expression_matrix), value = TRUE)
+y_col <- grep("UDN212054b_Noncyclo_", colnames(expression_matrix), value = TRUE)
+
+# Check if both columns are found
+if (length(x_col) == 0 | length(y_col) == 0) {
+  stop("Required columns for scatter plot not found in the expression matrix.")
+}
+
+# Calculate correlation coefficient
+correlation <- cor(expression_matrix[[x_col]], expression_matrix[[y_col]], use = "complete.obs")
+
+# Create scatter plot
+plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
+  geom_point() +
+  labs(
+    title = paste0(plot_title, " (Correlation: ", round(correlation, 2), ")"),
+    x = paste0("Expression of ", x_col),
+    y = paste0("Expression of ", y_col)
+  ) +
+  theme_minimal() +
+  scale_x_continuous(limits = c(0, 5000)) +
+  scale_y_continuous(limits = c(0, 5000))
+
+# Save the plot as a PNG file
+ggsave("UDN212054_noncyclo_replicate_analysis.png", plot = plot, width = 10, height = 8)
+
+# Save the plot as a PDF file
+ggsave("UDN212054_noncyclo_replicate_analysis.pdf", plot = plot, width = 10, height = 8)
+
+# Do the same thing but for cyclo:
+
+# Extract relevant columns for the scatter plot
+x_col <- grep("UDN212054_Cyclo_", colnames(expression_matrix), value = TRUE)
+y_col <- grep("UDN212054b_Cyclo_", colnames(expression_matrix), value = TRUE)
+
+# Check if both columns are found
+if (length(x_col) == 0 | length(y_col) == 0) {
+  stop("Required columns for scatter plot not found in the expression matrix.")
+}
+
+# Calculate correlation coefficient
+correlation <- cor(expression_matrix[[x_col]], expression_matrix[[y_col]], use = "complete.obs")
+
+# Create scatter plot
+plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
+  geom_point() +
+  labs(
+    title = paste0(plot_title, " (Correlation: ", round(correlation, 2), ")"),
+    x = paste0("Expression of ", x_col),
+    y = paste0("Expression of ", y_col)
+  ) +
+  theme_minimal() +
+  scale_x_continuous(limits = c(0, 5000)) +
+  scale_y_continuous(limits = c(0, 5000))
+
+# Save the plot as a PNG file
+ggsave("UDN212054_Cyclo_replicate_analysis.png", plot = plot, width = 10, height = 8)
+
+# Save the plot as a PDF file
+ggsave("UDN212054_Cyclo_replicate_analysis.pdf", plot = plot, width = 10, height = 8)
+
 
 ################################################
 # Replicate analysis for UDN687128
 ################################################
+
+# Make a scatter plot
+# If the column contains "UDN687128_" and "_Noncyclo_" use this as the x-axis values
+# If the column contains "UDN687128b_" and "_Noncyclo_" use this as the y-axis values
+
+# Extract relevant columns for the scatter plot
+x_col <- grep("UDN687128_Noncyclo_", colnames(expression_matrix), value = TRUE)
+y_col <- grep("UDN687128b_Noncyclo_", colnames(expression_matrix), value = TRUE)
+
+# Check if both columns are found
+if (length(x_col) == 0 | length(y_col) == 0) {
+  stop("Required columns for scatter plot not found in the expression matrix.")
+}
+
+# Calculate correlation coefficient
+correlation <- cor(expression_matrix[[x_col]], expression_matrix[[y_col]], use = "complete.obs")
+
+# Create scatter plot
+plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
+  geom_point() +
+  labs(
+    title = paste0(plot_title, " (Correlation: ", round(correlation, 2), ")"),
+    x = paste0("Expression of ", x_col),
+    y = paste0("Expression of ", y_col)
+  ) +
+  theme_minimal() +
+  scale_x_continuous(limits = c(0, 5000)) +
+  scale_y_continuous(limits = c(0, 5000))
+
+# Save the plot as a PNG file
+ggsave("UDN687128_noncyclo_replicate_analysis.png", plot = plot, width = 10, height = 8)
+
+# Save the plot as a PDF file
+ggsave("UDN687128_noncyclo_replicate_analysis.pdf", plot = plot, width = 10, height = 8)
+
+# Do the same thing but for cyclo:
+
+# Extract relevant columns for the scatter plot
+x_col <- grep("UDN687128_Cyclo_", colnames(expression_matrix), value = TRUE)
+y_col <- grep("UDN687128b_Cyclo_", colnames(expression_matrix), value = TRUE)
+
+# Check if both columns are found
+if (length(x_col) == 0 | length(y_col) == 0) {
+  stop("Required columns for scatter plot not found in the expression matrix.")
+}
+
+# Calculate correlation coefficient
+correlation <- cor(expression_matrix[[x_col]], expression_matrix[[y_col]], use = "complete.obs")
+
+# Create scatter plot
+plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
+  geom_point() +
+  labs(
+    title = paste0(plot_title, " (Correlation: ", round(correlation, 2), ")"),
+    x = paste0("Expression of ", x_col),
+    y = paste0("Expression of ", y_col)
+  ) +
+  theme_minimal() +
+  scale_x_continuous(limits = c(0, 5000)) +
+  scale_y_continuous(limits = c(0, 5000))
+
+# Save the plot as a PNG file
+ggsave("UDN687128_Cyclo_replicate_analysis.png", plot = plot, width = 10, height = 8)
+
+# Save the plot as a PDF file
+ggsave("UDN687128_Cyclo_replicate_analysis.pdf", plot = plot, width = 10, height = 8)
+
