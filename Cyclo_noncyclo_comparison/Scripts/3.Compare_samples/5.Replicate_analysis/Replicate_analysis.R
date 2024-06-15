@@ -83,7 +83,7 @@ if (length(x_col) == 0 | length(y_col) == 0) {
 plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
   geom_point() +
   labs(
-    title = plot_title,
+    title = paste0(plot_title, " (Correlation: ", round(correlation, 2), ")"),
     x = paste0("Expression of ", x_col),
     y = paste0("Expression of ", y_col)
   ) +
