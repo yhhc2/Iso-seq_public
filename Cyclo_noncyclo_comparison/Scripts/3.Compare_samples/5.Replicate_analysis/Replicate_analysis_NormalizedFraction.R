@@ -93,7 +93,7 @@ plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
   theme_minimal() 
 
 # Save the plot as a PNG file
-ggsave(paste0(sample1, "_", sample2, "_", condition, "_replicate_analysis.png"), plot = plot, width = 10, height = 8)
+ggsave(paste0(sample1, "_", sample2, "_replicate_analysis.png"), plot = plot, width = 10, height = 8)
 
 # Save the plot as a PDF file
-ggsave(paste0(sample1, "_", sample2, "_", condition, "_replicate_analysis.pdf"), plot = plot, width = 10, height = 8)
+ggsave(paste0(sample1, "_", sample2, "_replicate_analysis.pdf"), plot = plot, width = 10, height = 8)
