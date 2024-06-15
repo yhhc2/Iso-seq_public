@@ -79,6 +79,9 @@ if (length(x_col) == 0 | length(y_col) == 0) {
   stop("Required columns for scatter plot not found in the expression matrix.")
 }
 
+# Calculate correlation coefficient
+correlation <- cor(expression_matrix[[x_col]], expression_matrix[[y_col]], use = "complete.obs")
+
 # Create scatter plot
 plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
   geom_point() +
