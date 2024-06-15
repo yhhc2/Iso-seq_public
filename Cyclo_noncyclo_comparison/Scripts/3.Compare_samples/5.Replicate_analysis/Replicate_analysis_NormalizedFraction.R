@@ -93,8 +93,8 @@ plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
   geom_point() +
   labs(
     title = paste0(plot_title, " (Spearman: ", round(spearman_corr, 2), ", Pearson: ", round(pearson_corr, 2), ")"),
-    x = paste0("Expression of ", x_col),
-    y = paste0("Expression of ", y_col)
+    x = paste0("NormalizedFractionDifference of ", x_col),
+    y = paste0("NormalizedFractionDifference of ", y_col)
   ) +
   theme_minimal()
 
