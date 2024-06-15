@@ -86,7 +86,7 @@ plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
   theme_minimal()
 
 # Save the plot as a PNG file
-ggsave("UDN052264_noncyclo_replicate_analysis_NormalizedFractionDifference.png", plot = plot, width = 10, height = 8)
+ggsave("UDN052264_replicate_analysis_NormalizedFractionDifference.png", plot = plot, width = 10, height = 8)
 
 # Save the plot as a PDF file
-ggsave("UDN052264_noncyclo_replicate_analysis_NormalizedFractionDifference.pdf", plot = plot, width = 10, height = 8)
+ggsave("UDN052264_replicate_analysis_NormalizedFractionDifference.pdf", plot = plot, width = 10, height = 8)
