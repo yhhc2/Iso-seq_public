@@ -87,7 +87,9 @@ plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
     x = paste0("Expression of ", x_col),
     y = paste0("Expression of ", y_col)
   ) +
-  theme_minimal()
+  theme_minimal() +
+  scale_x_continuous(limits = c(0, 5000)) +
+  scale_y_continuous(limits = c(0, 5000))
 
 # Save the plot as a PNG file
 ggsave("UDN052264_replicate_analysis.png", plot = plot, width = 10, height = 8)
