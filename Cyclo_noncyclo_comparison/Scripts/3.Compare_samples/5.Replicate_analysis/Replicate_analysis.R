@@ -15,6 +15,7 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 
 # Check for correct number of arguments
+print(length(args))
 if (length(args) != 5) {
   stop("Usage: Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> <samples> <TPM or NormalizedFractionDifference>", call. = FALSE)
 }
