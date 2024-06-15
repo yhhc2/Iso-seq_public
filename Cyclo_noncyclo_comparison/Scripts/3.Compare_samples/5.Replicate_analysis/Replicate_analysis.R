@@ -16,12 +16,14 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Check for correct number of arguments
 if (length(args) != 2) {
-  stop("Usage: Rscript Replicate_analysis.R <file_path> <count_threshold>", call. = FALSE)
+  stop("Usage: Rscript Replicate_analysis.R <file_path> <count_threshold> <plot_title>", call. = FALSE)
 }
 
 # Assign variables from arguments
 file_path <- args[1]
 count_threshold <- as.numeric(args[2])
+plot_title <- args[3]
+
 
 # Read the CSV file into a data table
 dt <- fread(file_path)
@@ -68,10 +70,9 @@ print(head(expression_matrix))
 # If the column contains "UDN052264_" and "_Noncyclo_" use this as the x-axis values
 # If the column contains "UDN052264b_" and "_Noncyclo_" use this as the y-axis values
 
-
 # Extract relevant columns for the scatter plot
-x_col <- grep("UDN052264_.*_Noncyclo_", colnames(expression_matrix), value = TRUE)
-y_col <- grep("UDN052264b_.*_Noncyclo_", colnames(expression_matrix), value = TRUE)
+x_col <- grep("UDN052264_Noncyclo_", colnames(expression_matrix), value = TRUE)
+y_col <- grep("UDN052264b_Noncyclo_", colnames(expression_matrix), value = TRUE)
 
 # Check if both columns are found
 if (length(x_col) == 0 | length(y_col) == 0) {
