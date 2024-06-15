@@ -138,7 +138,7 @@ ggsave("UDN052264_Cyclo_replicate_analysis.pdf", plot = plot, width = 10, height
 
 # Extract relevant columns for the scatter plot
 x_col <- grep("UDN052264_Noncyclo_", colnames(expression_matrix), value = TRUE)
-y_col <- grep("UDN0212054_Noncyclo_", colnames(expression_matrix), value = TRUE)
+y_col <- grep("UDN212054_Noncyclo_", colnames(expression_matrix), value = TRUE)
 
 # Check if both columns are found
 if (length(x_col) == 0 | length(y_col) == 0) {
