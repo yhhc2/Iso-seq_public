@@ -3,7 +3,7 @@
 
 # Usage: 
 # conda activate r_env_per_isoform
-# Rscript Replicate_analysis_NormalizedFraction <file_path> <count_threshold> <plot_title> "UDN212054,UDN212054b"
+# Rscript Replicate_analysis_NormalizedFraction <file_path> <count_threshold> <plot_title> <samples>
 
 #setwd("~/2022-2023/Research/Computational/Isoform counting/Per_isoform_analysis/4.28.24_Comparison/Isoseq_comparison_cyclo_vs_noncyclo_4.28.24/PCA")
 
@@ -31,8 +31,8 @@ dt <- fread(file_path)
 # Print the first few rows of the data table
 print(head(dt))
 
-isoforms_to_keep <- dt[Sample %in% samples & (cyclo_count >= count_threshold | noncyclo_count >= count_threshold), unique(Isoform_PBid)]
-
+# Filter isoforms based on noncyclo_count and cyclo_count for the specified samples
+isoforms_to_keep <- dt[Sample %in% samples & (noncyclo_count >= count_threshold | cyclo_count >= count_threshold), unique(Isoform_PBid)]
 
 # Print helpful statements
 print("Number of isoforms to keep after filtering based on counts:")
@@ -79,18 +79,19 @@ if (all(is.na(x_values)) | all(is.na(y_values))) {
   stop("One or both columns are entirely NA.")
 }
 
-# Calculate Spearman correlation coefficient. Spearman correlation has less assumptions than Pearson.
-correlation <- cor(x_values, y_values, use = "complete.obs", method = "spearman")
+# Calculate Spearman and Pearson correlation coefficients
+spearman_corr <- cor(x_values, y_values, use = "complete.obs", method = "spearman")
+pearson_corr <- cor(x_values, y_values, use = "complete.obs", method = "pearson")
 
 # Create scatter plot
 plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
   geom_point() +
   labs(
-    title = paste0(plot_title, " (Spearman Correlation: ", round(correlation, 2), ")"),
+    title = paste0(plot_title, " (Spearman: ", round(spearman_corr, 2), ", Pearson: ", round(pearson_corr, 2), ")"),
     x = paste0("Expression of ", x_col),
     y = paste0("Expression of ", y_col)
   ) +
-  theme_minimal() 
+  theme_minimal()
 
 # Save the plot as a PNG file
 ggsave(paste0(sample1, "_", sample2, "_replicate_analysis.png"), plot = plot, width = 10, height = 8)
