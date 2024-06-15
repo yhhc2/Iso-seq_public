@@ -31,8 +31,13 @@ dt <- fread(file_path)
 # Print the first few rows of the data table
 print(head(dt))
 
-# Filter isoforms based on noncyclo_count and cyclo_count for the specified samples
+# Filter isoforms to keep only those that meet the threshold for either noncyclo or cyclo counts in both samples
 isoforms_to_keep <- dt[Sample %in% samples & (noncyclo_count >= count_threshold | cyclo_count >= count_threshold), unique(Isoform_PBid)]
+
+# Ensure that the filtered isoforms are present in both samples for either noncyclo or cyclo counts
+for (sample in samples) {
+  isoforms_to_keep <- intersect(isoforms_to_keep, dt[Sample == sample & (noncyclo_count >= count_threshold | cyclo_count >= count_threshold), unique(Isoform_PBid)])
+}
 
 # Print helpful statements
 print("Number of isoforms to keep after filtering based on counts:")
