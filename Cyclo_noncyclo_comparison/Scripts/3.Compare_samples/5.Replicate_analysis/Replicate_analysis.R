@@ -3,7 +3,7 @@
 
 # Usage: 
 # conda activate r_env_per_isoform
-# Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> "UDN212054,UDN212054b" "TPM"
+# Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> "UDN212054,UDN212054b"
 
 #setwd("~/2022-2023/Research/Computational/Isoform counting/Per_isoform_analysis/4.28.24_Comparison/Isoseq_comparison_cyclo_vs_noncyclo_4.28.24/PCA")
 
@@ -15,8 +15,8 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 
 # Check for correct number of arguments
-if (length(args) != 5) {
-  stop("Usage: Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> <samples> <TPM or NormalizedFractionDifference>", call. = FALSE)
+if (length(args) != 4) {
+  stop("Usage: Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> <samples>", call. = FALSE)
 }
 
 # Assign variables from arguments
@@ -24,8 +24,6 @@ file_path <- args[1]
 count_threshold <- as.numeric(args[2])
 plot_title <- args[3]
 samples <- strsplit(args[4], ",")[[1]]  # Parse samples argument
-matrix_value_type <- args[5]
-
 
 # Read the CSV file into a data table
 dt <- fread(file_path)
@@ -33,22 +31,33 @@ dt <- fread(file_path)
 # Print the first few rows of the data table
 print(head(dt))
 
-# To reduce dimensions, remove low coverage isoforms/genes in specified samples
-isoforms_to_keep <- dt[Sample %in% samples & noncyclo_count >= count_threshold, unique(Isoform_PBid)]
-
-# Print helpful statements
-print("Number of isoforms to keep after filtering based on counts:")
-print(length(isoforms_to_keep))
-
-# Filter the data table to keep only the desired Isoform_PBid and the selected samples
-dt <- dt[Isoform_PBid %in% isoforms_to_keep & Sample %in% samples]
 
 ################################################
-# Generate expression matrix
+# Generate scatter plots for the selected samples
 ################################################
 
-if(matrix_value_type == "TPM"){
-
+# Function to create and save scatter plots
+create_scatter_plot <- function(sample1, sample2, condition) {
+  
+  if(condition == "Cyclo"){
+    isoforms_to_keep <- dt[Sample %in% samples & cyclo_count >= count_threshold, unique(Isoform_PBid)]
+  }
+  
+  if(condition == "Noncyclo"){
+    isoforms_to_keep <- dt[Sample %in% samples & noncyclo_count >= count_threshold, unique(Isoform_PBid)]
+  }
+  
+  # Print helpful statements
+  print("Number of isoforms to keep after filtering based on counts:")
+  print(length(isoforms_to_keep))
+  
+  # Filter the data table to keep only the desired Isoform_PBid and the selected samples
+  dt <- dt[Isoform_PBid %in% isoforms_to_keep & Sample %in% samples]
+  
+  ################################################
+  # Generate expression matrix
+  ################################################
+  
   # Assume 'dt' is already your loaded data table as per the previous steps
   # Now, reshape the data table to create the expression matrix
   dt_long <- melt(dt, id.vars = c("Isoform_PBid", "Sample"), measure.vars = c("Cyclo_TPM", "Noncyclo_TPM"))
@@ -61,25 +70,7 @@ if(matrix_value_type == "TPM"){
   
   # Print the first few rows of the expression matrix to check
   print(head(expression_matrix))
-}
-
-if(matrix_value_type == "NormalizedFractionDifference"){
   
-  dt_long <- melt(dt, id.vars = c("Isoform_PBid", "Sample"), measure.vars = c("NormalizedFractionDifference"))
-  
-  # Cast the long format back to a wide format where each gene has its own row and each sample its own column
-  expression_matrix <- dcast(dt_long, Isoform_PBid ~ Sample, value.var = "value")
-  
-  # Print the first few rows of the expression matrix to check
-  print(head(expression_matrix))
-}
-
-################################################
-# Generate scatter plots for the selected samples
-################################################
-
-# Function to create and save scatter plots
-create_scatter_plot <- function(sample1, sample2, condition) {
   x_col <- grep(paste0(sample1, "_", condition), colnames(expression_matrix), value = TRUE)
   y_col <- grep(paste0(sample2, "_", condition), colnames(expression_matrix), value = TRUE)
   
@@ -96,7 +87,7 @@ create_scatter_plot <- function(sample1, sample2, condition) {
     stop("One or both columns are entirely NA.")
   }
   
-  # Calculate Spearman correlation coefficient
+  # Calculate Spearman correlation coefficient. Spearman correlation has less assumptions than Pearson.
   correlation <- cor(x_values, y_values, use = "complete.obs", method = "spearman")
   
   # Create scatter plot
