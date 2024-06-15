@@ -15,14 +15,14 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 
 # Check for correct number of arguments
-if (length(args) != 3) {
-  stop("Usage: Rscript 1.PCA.R <file_path> <count_threshold> <plot_title>", call. = FALSE)
+if (length(args) != 2) {
+  stop("Usage: Rscript Replicate_analysis.R <file_path> <count_threshold>", call. = FALSE)
 }
 
 # Assign variables from arguments
 file_path <- args[1]
 count_threshold <- as.numeric(args[2])
-plot_title <- args[3]
+
 # Read the CSV file into a data table
 dt <- fread(file_path)
 
