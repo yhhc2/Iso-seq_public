@@ -47,10 +47,10 @@ dt <- dt[Isoform_PBid %in% isoforms_to_keep]
 ################################################
 
 # Reshape the data table to create the expression matrix
-dt_long <- melt(dt, id.vars = c("Isoform_PBid", "Sample"), measure.vars = c("NormalizedFraction"))
+dt_long <- melt(dt, id.vars = c("Isoform_PBid", "Sample"), measure.vars = c("NormalizedFractionDifference"))
 
 # Cast the long format back to a wide format where each gene has its own row and each sample its own column
-expression_matrix <- dcast(dt_long, Isoform_PBid ~ Sample, value.var = "NormalizedFraction")
+expression_matrix <- dcast(dt_long, Isoform_PBid ~ Sample, value.var = "NormalizedFractionDifference")
 
 # Print the first few rows of the expression matrix to check
 print(head(expression_matrix))
@@ -84,7 +84,7 @@ plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
   theme_minimal()
 
 # Save the plot as a PNG file
-ggsave("UDN052264_noncyclo_replicate_analysis_NormalizedFraction.png", plot = plot, width = 10, height = 8)
+ggsave("UDN052264_noncyclo_replicate_analysis_NormalizedFractionDifference.png", plot = plot, width = 10, height = 8)
 
 # Save the plot as a PDF file
-ggsave("UDN052264_noncyclo_replicate_analysis_NormalizedFraction.pdf", plot = plot, width = 10, height = 8)
+ggsave("UDN052264_noncyclo_replicate_analysis_NormalizedFractionDifference.pdf", plot = plot, width = 10, height = 8)
