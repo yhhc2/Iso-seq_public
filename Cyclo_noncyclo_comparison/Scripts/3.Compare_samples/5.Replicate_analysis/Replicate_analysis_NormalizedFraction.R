@@ -3,7 +3,7 @@
 
 # Usage: 
 # conda activate r_env_per_isoform
-# Rscript Replicate_analysis_NormalizedFraction <file_path> <count_threshold> <plot_title> <samples>
+# Rscript Replicate_analysis_NormalizedFraction <file_path> <count_threshold> <plot_title> <samples> <highlight_isoforms>
 
 #setwd("~/2022-2023/Research/Computational/Isoform counting/Per_isoform_analysis/4.28.24_Comparison/Isoseq_comparison_cyclo_vs_noncyclo_4.28.24/PCA")
 
@@ -15,8 +15,8 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 
 # Check for correct number of arguments
-if (length(args) != 4) {
-  stop("Usage: Rscript Replicate_analysis_NormalizedFraction <file_path> <count_threshold> <plot_title> <samples>", call. = FALSE)
+if (length(args) != 5) {
+  stop("Usage: Rscript Replicate_analysis_NormalizedFraction <file_path> <count_threshold> <plot_title> <samples> <highlight_isoforms>", call. = FALSE)
 }
 
 # Assign variables from arguments
@@ -24,12 +24,18 @@ file_path <- args[1]
 count_threshold <- as.numeric(args[2])
 plot_title <- args[3]
 samples <- strsplit(args[4], ",")[[1]]  # Parse samples argument
+highlight_isoforms <- strsplit(args[5], ",")[[1]]  # Parse isoforms to highlight argument
 
 # Read the CSV file into a data table
 dt <- fread(file_path)
 
 # Print the first few rows of the data table
 print(head(dt))
+
+# Ensure that the relevant columns exist
+if (!("Sample" %in% colnames(dt)) | !("noncyclo_count" %in% colnames(dt)) | !("cyclo_count" %in% colnames(dt))) {
+  stop("The required 'Sample', 'noncyclo_count', or 'cyclo_count' columns are not found in the data.")
+}
 
 # Filter isoforms to keep only those that meet the threshold for either noncyclo or cyclo counts in both samples
 isoforms_to_keep <- dt[Sample %in% samples & (noncyclo_count >= count_threshold | cyclo_count >= count_threshold), unique(Isoform_PBid)]
@@ -84,13 +90,18 @@ if (all(is.na(x_values)) | all(is.na(y_values))) {
   stop("One or both columns are entirely NA.")
 }
 
+# Add a column to identify highlighted isoforms
+expression_matrix$highlight <- ifelse(expression_matrix$Isoform_PBid %in% highlight_isoforms, "highlight", "normal")
+
 # Calculate Spearman and Pearson correlation coefficients
 spearman_corr <- cor(x_values, y_values, use = "complete.obs", method = "spearman")
 pearson_corr <- cor(x_values, y_values, use = "complete.obs", method = "pearson")
 
 # Create scatter plot
-plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
+plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col, color = "highlight")) +
   geom_point() +
+  geom_text(aes(label = ifelse(Isoform_PBid %in% highlight_isoforms, Isoform_PBid, "")), vjust = -1, hjust = 1) +
+  scale_color_manual(values = c("normal" = "black", "highlight" = "red")) +
   labs(
     title = paste0(plot_title, " (Spearman: ", round(spearman_corr, 2), ", Pearson: ", round(pearson_corr, 2), ")"),
     x = paste0("NormalizedFractionDifference of ", x_col),
