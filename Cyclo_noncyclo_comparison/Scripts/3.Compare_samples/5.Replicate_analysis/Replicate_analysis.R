@@ -108,7 +108,9 @@ create_scatter_plot <- function(sample1, sample2, condition) {
       x = paste0("Expression of ", x_col),
       y = paste0("Expression of ", y_col)
     ) +
-    theme_minimal()
+    theme_minimal() +
+    scale_x_continuous(limits = c(0, 1000)) +
+    scale_y_continuous(limits = c(0, 1000))
   
   # Save the plot as a PNG file
   ggsave(paste0(sample1, "_", sample2, "_", condition, "_replicate_analysis.png"), plot = plot, width = 10, height = 8)
