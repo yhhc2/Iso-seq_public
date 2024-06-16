@@ -64,6 +64,9 @@ print(head(dt_long))
 # Cast the long format back to a wide format where each gene has its own row and each sample its own column
 expression_matrix <- dcast(dt_long, Isoform_PBid ~ Sample, value.var = "value")
 
+# Replace all NA values with 0
+expression_matrix[is.na(expression_matrix)] <- 0
+
 # Print the first few rows of the expression matrix to check
 print(head(expression_matrix))
 
