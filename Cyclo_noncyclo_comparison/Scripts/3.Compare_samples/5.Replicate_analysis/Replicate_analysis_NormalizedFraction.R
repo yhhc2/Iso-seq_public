@@ -41,9 +41,9 @@ if (!("Sample" %in% colnames(dt)) | !("noncyclo_count" %in% colnames(dt)) | !("c
 isoforms_to_keep <- dt[Sample %in% samples & (noncyclo_count >= count_threshold | cyclo_count >= count_threshold), unique(Isoform_PBid)]
 
 # Ensure that the filtered isoforms are present in both samples for either noncyclo or cyclo counts
-for (sample in samples) {
-  isoforms_to_keep <- intersect(isoforms_to_keep, dt[Sample == sample & (noncyclo_count >= count_threshold | cyclo_count >= count_threshold), unique(Isoform_PBid)])
-}
+#for (sample in samples) {
+#  isoforms_to_keep <- intersect(isoforms_to_keep, dt[Sample == sample & (noncyclo_count >= count_threshold | cyclo_count >= count_threshold), unique(Isoform_PBid)])
+#}
 
 # Print helpful statements
 print("Number of isoforms to keep after filtering based on counts:")
