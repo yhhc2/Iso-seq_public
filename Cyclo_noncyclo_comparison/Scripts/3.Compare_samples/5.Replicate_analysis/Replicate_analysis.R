@@ -3,7 +3,7 @@
 
 # Usage: 
 # conda activate r_env_per_isoform
-# Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> "UDN212054,UDN212054b"
+# Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> <samples> <highlight_isoforms>
 
 #setwd("~/2022-2023/Research/Computational/Isoform counting/Per_isoform_analysis/4.28.24_Comparison/Isoseq_comparison_cyclo_vs_noncyclo_4.28.24/PCA")
 
@@ -15,8 +15,8 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 
 # Check for correct number of arguments
-if (length(args) != 4) {
-  stop("Usage: Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> <samples>", call. = FALSE)
+if (length(args) != 5) {
+  stop("Usage: Rscript Replicate_analysis <file_path> <count_threshold> <plot_title> <samples> <highlight_isoforms>", call. = FALSE)
 }
 
 # Assign variables from arguments
@@ -24,6 +24,7 @@ file_path <- args[1]
 count_threshold <- as.numeric(args[2])
 plot_title <- args[3]
 samples <- strsplit(args[4], ",")[[1]]  # Parse samples argument
+highlight_isoforms <- strsplit(args[5], ",")[[1]]  # Parse isoforms to highlight argument
 
 # Read the CSV file into a data table
 dt <- fread(file_path)
@@ -68,6 +69,9 @@ create_scatter_plot <- function(sample1, sample2, condition) {
   # Cast the long format back to a wide format where each gene has its own row and each sample type its own column
   expression_matrix <- dcast(dt_long, Isoform_PBid ~ variable, value.var = "value")
   
+  # Replace all NA values with 0
+  expression_matrix[is.na(expression_matrix)] <- 0
+  
   # Print the first few rows of the expression matrix to check
   print(head(expression_matrix))
   
@@ -87,14 +91,20 @@ create_scatter_plot <- function(sample1, sample2, condition) {
     stop("One or both columns are entirely NA.")
   }
   
-  # Calculate Spearman correlation coefficient. Spearman correlation has less assumptions than Pearson.
-  correlation <- cor(x_values, y_values, use = "complete.obs", method = "spearman")
+  # Add a column to identify highlighted isoforms
+  expression_matrix$highlight <- ifelse(expression_matrix$Isoform_PBid %in% highlight_isoforms, "highlight", "normal")
+  
+  # Calculate Spearman and Pearson correlation coefficients
+  spearman_corr <- cor(x_values, y_values, use = "complete.obs", method = "spearman")
+  pearson_corr <- cor(x_values, y_values, use = "complete.obs", method = "pearson")
   
   # Create scatter plot
-  plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col)) +
+  plot <- ggplot(expression_matrix, aes_string(x = x_col, y = y_col, color = "highlight")) +
     geom_point() +
+    geom_text(aes(label = ifelse(Isoform_PBid %in% highlight_isoforms, Isoform_PBid, "")), vjust = -1, hjust = 1) +
+    scale_color_manual(values = c("normal" = "black", "highlight" = "red")) +
     labs(
-      title = paste0(plot_title, " (Spearman Correlation: ", round(correlation, 2), ")"),
+      title = paste0(plot_title, " (Spearman: ", round(spearman_corr, 2), ", Pearson: ", round(pearson_corr, 2), ")"),
       x = paste0("Expression of ", x_col),
       y = paste0("Expression of ", y_col)
     ) +
