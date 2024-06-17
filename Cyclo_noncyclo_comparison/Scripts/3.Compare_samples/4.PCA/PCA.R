@@ -58,7 +58,8 @@ expression_matrix <- dcast(dt_long, Isoform_PBid ~ variable, value.var = "value"
 # Print the first few rows of the expression matrix to check
 print(head(expression_matrix))
 
-#write.csv(expression_matrix, "expression_matrix_ge10reads.csv", row.names = FALSE)  # Adjust row.names based on your needs
+#write.csv(expression_matrix, "expression_matrix.csv", row.names = FALSE)  # Adjust row.names based on your needs
+save(expression_matrix, file = "expression_matrix.RData")
 
 ################################################
 # Generate PCA plot
