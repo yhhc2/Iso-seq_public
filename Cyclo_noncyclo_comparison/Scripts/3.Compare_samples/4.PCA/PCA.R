@@ -87,7 +87,7 @@ pca_data$Type <- ifelse(grepl("_Cyclo", pca_data$Sample), "cyclo", "noncyclo")
 pca_plot <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Type, label = Sample)) +
   geom_point(alpha = 0.8, size = 4) +
   geom_text(aes(label = Sample), vjust = -0.1, hjust = -0.1, size = 2, color = "black") +  # Adjust label position and size
-  scale_color_manual(values = c("cyclo" = "blue", "noncyclo" = "red")) +
+  scale_color_manual(values = c("cyclo" = "red", "noncyclo" = "blue")) +
   labs(title = "PCA Plot",
        x = paste("PC1 (", variance_explained[1], "% variance)", sep = ""),
        y = paste("PC2 (", variance_explained[2], "% variance)", sep = ""),
