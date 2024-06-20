@@ -204,5 +204,3 @@ Rscript "$Filter_for_plotting_script" \
   "${Compare_samples_Novel_iso_abundance_in_gene}/data_combined_full_gene_with_Hyp5.csv" \
   > output.txt \
   2>&1
-
-
