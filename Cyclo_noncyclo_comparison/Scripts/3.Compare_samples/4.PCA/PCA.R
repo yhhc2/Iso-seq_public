@@ -59,7 +59,7 @@ expression_matrix <- dcast(dt_long, Isoform_PBid ~ variable, value.var = "value"
 print(head(expression_matrix))
 
 #write.csv(expression_matrix, "expression_matrix.csv", row.names = FALSE)  # Adjust row.names based on your needs
-save(expression_matrix, file = "expression_matrix.RData")
+save(expression_matrix, file = paste0(plot_title,"_expression_matrix.RData"))
 
 ################################################
 # Generate PCA plot
