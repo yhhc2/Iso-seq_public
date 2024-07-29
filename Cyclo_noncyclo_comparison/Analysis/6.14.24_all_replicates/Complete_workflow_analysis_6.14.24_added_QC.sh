@@ -40,7 +40,8 @@ omim_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_nonc
 
 # Additional QC stuff
 QC_SRSF6="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/QC_Values/SRSF6_pileup.sh"
-QC_SRSF6_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/6.14.24_all_replicates/QC_Values"
+QC_diversity="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/QC_Values/Isoform_gene_diversity.sh"
+QC_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/6.14.24_all_replicates/QC_Values"
 
 #########################################################
 # QC with SRSF6 cassette exon
@@ -48,8 +49,8 @@ QC_SRSF6_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_n
 
 conda activate samtools
 
-mkdir -p "$QC_SRSF6_dir"
-cd "$QC_SRSF6_dir"
+mkdir -p "$QC_dir"
+cd "$QC_dir"
 
 bash "$QC_SRSF6" \
   "$sample_file" \
@@ -57,5 +58,23 @@ bash "$QC_SRSF6" \
   "chr20" \
   43459200 \
   "QC_SRSF6_results.tsv" \
-  > output.txt \
+  > output_QC_SRSF6.txt \
   2>&1
+
+#########################################################
+# QC with isoform and gene diversity
+#########################################################
+
+bash "$QC_diversity" \
+  "${Compare_samples_Isoform}/data_combined_full.csv" \
+  unique_isoforms_counts.tsv \
+  > output_QC_diversity_isoform.txt \
+  2>&1
+
+
+bash "$QC_diversity" \
+  "${Compare_samples_Gene}/data_combined_full.csv" \
+  unique_genes_counts.tsv \
+  > output_QC_diversity_gene.txt \
+  2>&1
+

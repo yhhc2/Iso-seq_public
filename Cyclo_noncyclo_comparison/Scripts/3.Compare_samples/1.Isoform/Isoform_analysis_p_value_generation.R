@@ -732,7 +732,7 @@ omim_data <- read.table(omim_file_path, header = TRUE, sep = "\t", check.names =
 omim_data <- omim_data %>%
   filter(`Approved Gene Symbol` != "")
 
-# Handle pseudoautosomal genes. These genes have two rows in the omim data. For each gene, I want to collapse them into a single row.
+# Handle pseudoautosomal genes (or any gene with multiple rows in omim file). These genes have multiple rows in the omim data. For each gene, I want to collapse them into a single row.
 omim_data <- omim_data %>%
   group_by(`Approved Gene Symbol`) %>%  # Ensure the column name is correct
   summarize(
