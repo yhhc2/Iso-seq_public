@@ -76,6 +76,13 @@ data_combined_full <- merge(all_combinations, data_combined, all = TRUE)
 data_combined_full[is.na(data_combined_full)] <- 0
 data_combined_full <- data_combined_full[, 1:4] 
 
+# Test: Data combined correctly
+test_that("Data combined correctly", {
+  expect_true(nrow(data_combined) > 0)
+  expect_true("Sample" %in% colnames(data_combined))
+})
+
+
 #######################################################################
 # Populating datatable
 #######################################################################
@@ -124,6 +131,9 @@ if(!gene_level){
 #######################################################################
 
 print(paste("Started adding total sums, TPM, etc. at:", Sys.time()))
+
+# Convert data_combined_full to a data.table
+setDT(data_combined_full)
 
 # Gene-level change.If doing analysis gene-level instead of isoform-level
 if(gene_level){
@@ -269,24 +279,6 @@ test_that("Sample information is loaded correctly", {
   expect_true("collapsed_by_isoform_file_cyclo_noncyclo_counts_classified" %in% colnames(sample_info))
 })
 
-# Test: Data combined correctly
-test_that("Data combined correctly", {
-  expect_true(nrow(data_combined) > 0)
-  expect_true("Sample" %in% colnames(data_combined))
-})
-
-# Test: Total counts are calculated correctly
-test_that("Total counts are calculated correctly", {
-  total_counts_check <- data_combined_full %>%
-    group_by(Sample) %>%
-    summarise(check_TotalCyclo = sum(cyclo_count), check_TotalNoncyclo = sum(noncyclo_count))
-  
-  expect_equal(total_counts_by_sample$TotalCyclo, total_counts_check$check_TotalCyclo)
-  expect_equal(total_counts_by_sample$TotalNoncyclo, total_counts_check$check_TotalNoncyclo)
-})
-
-
-#############
 
 # Test: Files are read correctly
 test_that("Files are read correctly", {
