@@ -131,7 +131,7 @@ print("Unit test results:")
 test_that("wide_result has the correct columns", {
   expect_true(all(c("Sample", "associated_gene", "Total_bin_cyclo_count_Bin1_le", 
                     "Total_bin_noncyclo_count_Bin1_le", "Total_bin_cyclo_count_Bin2_g", 
-                    "Total_bin_noncyclo_count_Bin2_g", "P_Value_Hyp5", 
+                    "Total_bin_noncyclo_count_Bin2_g", 
                     "proportion_in_Bin1_cyclo", "proportion_in_Bin1_noncyclo") %in% names(wide_result)))
 })
 
