@@ -2,7 +2,9 @@
 # Hank Cheng
 # 2024/05
 
-# Usage bash Complete_workflow_analysis_9.2.24.sh > Complete_workflow_analysis_9.2.24.output.txt 2>&1
+# Runs faster if using more cores: salloc -A stergachislab --mem=500G --time="1-0" -p compute-ultramem -c 20
+
+# Usage bash Complete_workflow_analysis_9.19.24_UDN212054b.sh > Complete_workflow_analysis_9.19.24_UDN212054b.output.txt 2>&1
 
 source /mmfs1/gscratch/stergachislab/yhhc/tools/miniconda3/miniconda3/bin/activate
 
@@ -23,24 +25,24 @@ helper_script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_
 #Filter_for_plotting_script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/4.Filter_for_plotting/Filter_results_for_plotting.R"
 
 # Directories:
-Split_read_stats="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/1.Split_read_stats"
-Collapse_counts="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/2.Collapse_counts"
-Compare_samples_Isoform="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/3.Compare_samples/1.Isoform"
-Compare_samples_Gene="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/3.Compare_samples/2.Gene"
-Compare_samples_Novel_iso_abundance_in_gene="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/3.Compare_samples/3.Novel_iso_abundance_in_gene"
-Compare_samples_PCA="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/3.Compare_samples/4.PCA"
-#Filter_for_plotting_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/4.Filter_for_plotting"
+Split_read_stats="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/1.Split_read_stats"
+Collapse_counts="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/2.Collapse_counts"
+Compare_samples_Isoform="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/3.Compare_samples/1.Isoform"
+Compare_samples_Gene="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/3.Compare_samples/2.Gene"
+Compare_samples_Novel_iso_abundance_in_gene="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/3.Compare_samples/3.Novel_iso_abundance_in_gene"
+Compare_samples_PCA="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/3.Compare_samples/4.PCA"
+#Filter_for_plotting_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/4.Filter_for_plotting"
 
 # Input files:
 read_stat_file="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/6-collapsed/collapsed.read_stat.txt"
 classification_file="/mmfs1/gscratch/stergachislab/asedeno/data/Hank_MASseq/7-pigeon/pigeon_classification.txt"
-sample_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/Inputs/Sample_names_and_bam_locations.tsv"
-omim_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/Inputs/genemap2.txt"
+sample_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/Inputs/Sample_names_and_bam_locations.tsv"
+omim_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/Inputs/genemap2.txt"
 
 # Additional QC stuff
 QC_SRSF6="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/QC_Values/SRSF6_pileup.sh"
 QC_diversity="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/QC_Values/Isoform_gene_diversity.sh"
-QC_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/4.QC_Values"
+QC_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/4.QC_Values"
 
 
 # #########################################################
@@ -222,86 +224,86 @@ QC_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncycl
 #   2>&1
 
 
-# #########################################################
-# # 5.Test_statistics
-# #########################################################
+#########################################################
+# 5.Test_statistics
+#########################################################
 
-Test_statistics="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/5.Test_statistics"
+Test_statistics="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/5.Test_statistics"
 conda deactivate
 conda activate python_env_isoseq
 
-# mkdir -p "$Test_statistics"
-# cd "$Test_statistics"
+mkdir -p "$Test_statistics"
+cd "$Test_statistics"
 
-# # Define variables for input scripts
-# HYP1_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp1.ipynb"
-# HYP2_LOE_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp2_LOE.ipynb"
-# HYP2_GOE_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp2_GOE.ipynb"
-# HYP3_GOE_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp3_GOE.ipynb"
-# HYP5_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp5.ipynb"
+# Define variables for input scripts
+HYP1_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp1.ipynb"
+HYP2_LOE_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp2_LOE.ipynb"
+HYP2_GOE_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp2_GOE.ipynb"
+HYP3_GOE_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp3_GOE.ipynb"
+HYP5_SCRIPT="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Test_statistic_Hyp5.ipynb"
 
-# # Define variables for input files
-# GENE_FILE="${Compare_samples_Novel_iso_abundance_in_gene}/data_combined_full_gene_with_Hyp5.csv"
-# ISOFORM_FILE="${Compare_samples_Isoform}/data_combined_full.csv"
+# Define variables for input files
+GENE_FILE="${Compare_samples_Novel_iso_abundance_in_gene}/data_combined_full_gene_with_Hyp5.csv"
+ISOFORM_FILE="${Compare_samples_Isoform}/data_combined_full.csv"
 
-# # Hypothesis 1
-# echo "Starting hypothesis 1"
-# mkdir -p output/Hypothesis1/Gene
-# mkdir -p output/Hypothesis1/Isoform
-# cd output/Hypothesis1/Gene
-# papermill $HYP1_SCRIPT output_Test_statistic_Hyp1_Gene.ipynb -p filename $GENE_FILE &
-# cd ../Isoform
-# papermill $HYP1_SCRIPT output_Test_statistic_Hyp1_Isoform.ipynb -p filename $ISOFORM_FILE &
-# cd ../../..
-# wait # Ensure all background processes for Hypothesis 1 finish
-# echo "Completed hypothesis 1"
+# Hypothesis 1
+echo "Starting hypothesis 1"
+mkdir -p output/Hypothesis1/Gene
+mkdir -p output/Hypothesis1/Isoform
+cd output/Hypothesis1/Gene
+papermill $HYP1_SCRIPT output_Test_statistic_Hyp1_Gene.ipynb -p filename $GENE_FILE &
+cd ../Isoform
+papermill $HYP1_SCRIPT output_Test_statistic_Hyp1_Isoform.ipynb -p filename $ISOFORM_FILE &
+cd ../../..
+wait # Ensure all background processes for Hypothesis 1 finish
+echo "Completed hypothesis 1"
 
-# # Hypothesis 2 LOE
-# echo "Starting hypothesis 2 LOE"
-# mkdir -p output/Hypothesis2LOE/Gene
-# mkdir -p output/Hypothesis2LOE/Isoform
-# cd output/Hypothesis2LOE/Gene
-# papermill $HYP2_LOE_SCRIPT output_Test_statistic_Hyp2_LOE_Gene.ipynb -p filename $GENE_FILE &
-# cd ../Isoform
-# papermill $HYP2_LOE_SCRIPT output_Test_statistic_Hyp2_LOE_Isoform.ipynb -p filename $ISOFORM_FILE &
-# cd ../../..
-# wait # Ensure all background processes for Hypothesis 2 LOE finish
-# echo "Completed hypothesis 2 LOE"
+# Hypothesis 2 LOE
+echo "Starting hypothesis 2 LOE"
+mkdir -p output/Hypothesis2LOE/Gene
+mkdir -p output/Hypothesis2LOE/Isoform
+cd output/Hypothesis2LOE/Gene
+papermill $HYP2_LOE_SCRIPT output_Test_statistic_Hyp2_LOE_Gene.ipynb -p filename $GENE_FILE &
+cd ../Isoform
+papermill $HYP2_LOE_SCRIPT output_Test_statistic_Hyp2_LOE_Isoform.ipynb -p filename $ISOFORM_FILE &
+cd ../../..
+wait # Ensure all background processes for Hypothesis 2 LOE finish
+echo "Completed hypothesis 2 LOE"
 
-# # Hypothesis 2 GOE
-# echo "Starting hypothesis 2 GOE"
-# mkdir -p output/Hypothesis2GOE/Gene
-# mkdir -p output/Hypothesis2GOE/Isoform
-# cd output/Hypothesis2GOE/Gene
-# papermill $HYP2_GOE_SCRIPT output_Test_statistic_Hyp2_GOE_Gene.ipynb -p filename $GENE_FILE &
-# cd ../Isoform
-# papermill $HYP2_GOE_SCRIPT output_Test_statistic_Hyp2_GOE_Isoform.ipynb -p filename $ISOFORM_FILE &
-# cd ../../..
-# wait # Ensure all background processes for Hypothesis 2 GOE finish
-# echo "Completed hypothesis 2 GOE"
+# Hypothesis 2 GOE
+echo "Starting hypothesis 2 GOE"
+mkdir -p output/Hypothesis2GOE/Gene
+mkdir -p output/Hypothesis2GOE/Isoform
+cd output/Hypothesis2GOE/Gene
+papermill $HYP2_GOE_SCRIPT output_Test_statistic_Hyp2_GOE_Gene.ipynb -p filename $GENE_FILE &
+cd ../Isoform
+papermill $HYP2_GOE_SCRIPT output_Test_statistic_Hyp2_GOE_Isoform.ipynb -p filename $ISOFORM_FILE &
+cd ../../..
+wait # Ensure all background processes for Hypothesis 2 GOE finish
+echo "Completed hypothesis 2 GOE"
 
-# # Hypothesis 3 GOE
-# echo "Starting hypothesis 3 GOE"
-# mkdir -p output/Hypothesis3GOE/Gene
-# mkdir -p output/Hypothesis3GOE/Isoform
-# cd output/Hypothesis3GOE/Gene
-# papermill $HYP3_GOE_SCRIPT output_Test_statistic_Hyp3_GOE_Gene.ipynb -p filename $GENE_FILE &
-# cd ../Isoform
-# papermill $HYP3_GOE_SCRIPT output_Test_statistic_Hyp3_GOE_Isoform.ipynb -p filename $ISOFORM_FILE &
-# cd ../../..
-# wait # Ensure all background processes for Hypothesis 3 GOE finish
-# echo "Completed hypothesis 3 GOE"
+# Hypothesis 3 GOE
+echo "Starting hypothesis 3 GOE"
+mkdir -p output/Hypothesis3GOE/Gene
+mkdir -p output/Hypothesis3GOE/Isoform
+cd output/Hypothesis3GOE/Gene
+papermill $HYP3_GOE_SCRIPT output_Test_statistic_Hyp3_GOE_Gene.ipynb -p filename $GENE_FILE &
+cd ../Isoform
+papermill $HYP3_GOE_SCRIPT output_Test_statistic_Hyp3_GOE_Isoform.ipynb -p filename $ISOFORM_FILE &
+cd ../../..
+wait # Ensure all background processes for Hypothesis 3 GOE finish
+echo "Completed hypothesis 3 GOE"
 
-# # Hypothesis 5
-# echo "Starting hypothesis 5"
-# mkdir -p output/Hypothesis5/Gene
-# cd output/Hypothesis5/Gene
-# papermill $HYP5_SCRIPT output_Test_statistic_Hyp5_Gene.ipynb -p filename $GENE_FILE &
-# cd ../../..
-# wait # Ensure all background processes for Hypothesis 5 finish
-# echo "Completed hypothesis 5"
+# Hypothesis 5
+echo "Starting hypothesis 5"
+mkdir -p output/Hypothesis5/Gene
+cd output/Hypothesis5/Gene
+papermill $HYP5_SCRIPT output_Test_statistic_Hyp5_Gene.ipynb -p filename $GENE_FILE &
+cd ../../..
+wait # Ensure all background processes for Hypothesis 5 finish
+echo "Completed hypothesis 5"
 
-# echo "Completed all hypotheses"
+echo "Completed all hypotheses"
 
 
 #########################################################
@@ -314,9 +316,9 @@ cd "$Test_statistics"
 SHINY_INPUT_NOTEBOOK='/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/5.Test_statistics/Prep_for_shiny.ipynb'
 
 # Define variables for paths
-PROBANDS_FILE='/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/Inputs/7.12.24_manualListOfSamples.tsv'
-HPO_FILE='/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/Inputs/phenotype.hpoa'
-SEQR_FILES_DIR='/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.2.24/Inputs/Seqr'
+PROBANDS_FILE='/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/Inputs/7.12.24_manualListOfSamples.tsv'
+HPO_FILE='/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/Inputs/phenotype.hpoa'
+SEQR_FILES_DIR='/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/Inputs/Seqr'
 
 papermill "$SHINY_INPUT_NOTEBOOK" Prep_for_shiny_output_notebook.ipynb \
     -p input_file_hyp1_gene 'output/Hypothesis1/Gene/Test_statistic_hyp1_notebook_variables.pkl' \
@@ -333,4 +335,38 @@ papermill "$SHINY_INPUT_NOTEBOOK" Prep_for_shiny_output_notebook.ipynb \
     -p genemap_file "$omim_file" \
     -p seqr_files_dir "$SEQR_FILES_DIR"
 
+#########################################################
+# 6.Intersect_genetics
+#########################################################
 
+conda deactivate
+conda activate vep_environment
+
+VCF_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/6.Intersect_genetics/VCF"
+mkdir -p "$VCF_dir"
+cd "$VCF_dir"
+
+vep_script="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/6.Intersect_genetics/vep_annotate_and_filter_conda_gnomad_varinfo.sh"
+
+bash "$vep_script" "$sample_file" . > vep_annotate_and_filter_conda_gnomad_varinfo_out.txt 2>&1
+
+conda deactivate
+conda activate python_env_isoseq
+
+Concatenated_and_intersected_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/9.19.24_UDN212054b/6.Intersect_genetics/Concatenated_and_intersected"
+mkdir -p "$Concatenated_and_intersected_dir"
+cd "$Concatenated_and_intersected_dir"
+
+concat_and_intersect_notebook="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/6.Intersect_genetics/Combine_csvs_and_filter_with_var_info.ipynb"
+
+papermill "$concat_and_intersect_notebook" concat_and_intersect_output_notebook.ipynb \
+    -p csv_files_gene '["added_HPO_and_seqr_Hyp1_Gene.csv", "added_HPO_and_seqr_Hyp2LOE_Gene.csv", "added_HPO_and_seqr_Hyp2GOE_Gene.csv", "added_HPO_and_seqr_Hyp3GOE_Gene.csv", "added_HPO_and_seqr_Hyp5_Gene.csv"]' \
+    -p csv_files_isoform '["added_HPO_and_seqr_Hyp1_Isoform.csv", "added_HPO_and_seqr_Hyp2LOE_Isoform.csv", "added_HPO_and_seqr_Hyp2GOE_Isoform.csv", "added_HPO_and_seqr_Hyp3GOE_Isoform.csv"]' \
+    -p tsv_file "$sample_file" \
+    -p vcf_directory "$VCF_dir" \
+    -p base_dir '$Test_statistics'
+
+
+
+# Todo
+# Add HPO for new patients. Get SpliceAI to work in VEP. 
