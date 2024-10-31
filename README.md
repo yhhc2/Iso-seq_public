@@ -61,7 +61,7 @@ different browser or using an incognito window.
 ## Validating effects of CHX
 
 To validate the effects of CHX, PCA was performed on the gene-level and
-isoform-level expression matrix for the 13 patients (26 samples)
+isoform-level expression matrix for the 18 patients (36 samples)
 included in the analysis. The clusters are being formed based on CHX
 treatment, which supports the idea that sample variability is not enough
 to prevent us from pulling out findings that are a result of the CHX
