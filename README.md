@@ -11,10 +11,6 @@ git clone https://github.com/yhhc2/Iso-seq_public.git
 
 Detailed usage information will be added soon.
 
-## License
-
-TBD
-
 ## Introduction
 
 This package takes in data from bulk-Isoseq processed with and without
