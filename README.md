@@ -55,6 +55,9 @@ examples:
 [Statistical approach slides with
 examples](https://docs.google.com/presentation/d/1QMtpavZtk7WnvgzzZJHgNS349EH08Kvn/edit?usp=drive_link&ouid=105176465598666354491&rtpof=true&sd=true)
 
+If the presentation is not opening properly, please try using a
+different browser or using an incognito window.
+
 ## Validating effects of CHX
 
 To validate the effects of CHX, PCA was performed on the gene-level and

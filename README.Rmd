@@ -58,6 +58,8 @@ Please refer to these slides for specifics on the ranking approach with examples
 
 [Statistical approach slides with examples](https://docs.google.com/presentation/d/1QMtpavZtk7WnvgzzZJHgNS349EH08Kvn/edit?usp=drive_link&ouid=105176465598666354491&rtpof=true&sd=true) 
 
+If the presentation is not opening properly, please try using a different browser or using an incognito window.
+
 ## Validating effects of CHX
 
 To validate the effects of CHX, PCA was performed on the gene-level and isoform-level expression matrix for the 13 patients (26 samples) included in the analysis. The clusters are being formed based on CHX treatment, which supports the idea that sample variability is not enough to prevent us from pulling out findings that are a result of the CHX treatment.
