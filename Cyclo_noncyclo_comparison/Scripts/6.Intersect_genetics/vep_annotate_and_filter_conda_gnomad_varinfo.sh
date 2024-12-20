@@ -102,8 +102,8 @@ for INPUT_VCF in $VCF_PATHS; do
     match(extra, /CADD_PHRED=([0-9.]+)/, arr_cadd);
     if (!arr_cadd[1]) arr_cadd[1] = "N/A";  # Add safety check for CADD_PHRED
 
-    # Apply both filters: MAX_AF < 0.01 and CADD_PHRED > 15
-    if (arr_maxaf[1] < 0.01 && arr_cadd[1] > 15) print;
+    # Apply both filters: MAX_AF should be < 0.01 or ".", and CADD_PHRED > 15
+    if ((arr_maxaf[1] < 0.01 || arr_maxaf[1] == ".") && arr_cadd[1] > 15) print;
   }' "$ANNOTATED_TXT" > "$FILTERED_TXT"
 
   # Step 4: Extract gene names with variant info
