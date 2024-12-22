@@ -40,7 +40,7 @@ omim_file="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_nonc
 # Additional QC stuff
 QC_SRSF6="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/QC_Values/SRSF6_pileup.sh"
 QC_diversity="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Scripts/QC_Values/Isoform_gene_diversity.sh"
-QC_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/12.20.24_new_workflow_script/QC_Values"
+QC_dir="/mmfs1/gscratch/stergachislab/yhhc/projects/Iso-seq_public/Cyclo_noncyclo_comparison/Analysis/12.20.24_new_workflow_script/4.QC_Values"
 
 
 #########################################################
