@@ -4,7 +4,9 @@
 # But do not ignore .R and .sh script files
 !*.R
 !*.sh
+!*.py
 !*gitignore
+
 
 # Include directories, to allow searching within them
 !**/
@@ -25,8 +27,6 @@ Cyclo_noncyclo_comparison/Examples/example2/Inputs/.Rhistory
 # Do not ignore script files
 !Cyclo_noncyclo_comparison/Scripts/
 !Cyclo_noncyclo_comparison/Scripts/**
-!Cyclo_noncyclo_comparison/package_name/
-!Cyclo_noncyclo_comparison/package_name/**
 
 
 
