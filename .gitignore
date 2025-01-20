@@ -28,5 +28,7 @@ Cyclo_noncyclo_comparison/Examples/example2/Inputs/.Rhistory
 !Cyclo_noncyclo_comparison/Scripts/
 !Cyclo_noncyclo_comparison/Scripts/**
 
+# Ignore checkpoint files
+**/.ipynb_checkpoints/
 
 

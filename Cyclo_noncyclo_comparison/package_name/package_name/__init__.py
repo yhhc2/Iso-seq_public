@@ -11,4 +11,8 @@ from .test_statistic import (
     NMD_rare_steady_state_transcript
 )
 from .ranking import calculate_ranks_for_sample
-from .expression_matrix import create_expression_matrix
+from .expression_matrix import (
+    create_expression_matrix,
+    create_long_format
+)
+
