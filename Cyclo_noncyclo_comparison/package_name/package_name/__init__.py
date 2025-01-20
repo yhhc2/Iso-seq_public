@@ -8,7 +8,8 @@ from .test_statistic import (
     Noncyclo_Expression_Outlier_GOE,
     Cyclo_Expression_Outlier_LOE,
     Cyclo_Expression_Outlier_GOE,
-    NMD_rare_steady_state_transcript
+    NMD_rare_steady_state_transcript,
+    process_hypothesis_test
 )
 from .ranking import calculate_ranks_for_sample
 from .expression_matrix import (

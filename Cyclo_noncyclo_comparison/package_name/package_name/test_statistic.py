@@ -113,3 +113,27 @@ def NMD_rare_steady_state_transcript(group):
     # Assign the calculated test statistics back to the group
     group['test_statistic'] = results
     return group
+
+
+def process_hypothesis_test(filtered_data, group_col, test_statistic_func):
+    """
+    Combine hypothesis testing, z-score calculation, and ranking into a single function.
+    
+    Parameters:
+    - filtered_data (pd.DataFrame): The filtered data to process.
+    - group_col (str): The column to group by (e.g., 'Isoform_PBid').
+    - test_statistic_func (function): The hypothesis test function to apply.
+    
+    Returns:
+    - pd.DataFrame: Ranked data after applying hypothesis test, calculating z-scores, and ranks.
+    """
+    # Apply hypothesis test
+    tested_data = apply_hypothesis_test(filtered_data, group_col, test_statistic_func)
+    
+    # Calculate z-scores
+    z_scored_data = calculate_z_score(tested_data, group_col=group_col, stat_col='test_statistic')
+    
+    # Calculate ranks
+    ranked_data = calculate_ranks_for_sample(z_scored_data)
+    
+    return ranked_data
