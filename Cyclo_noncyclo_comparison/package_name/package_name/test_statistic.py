@@ -141,6 +141,6 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func):
     z_scored_data = calculate_z_score(tested_data, group_col=group_col, stat_col='test_statistic')
     
     # Calculate ranks
-    ranked_data = calculate_ranks_for_sample(z_scored_data)
+    ranked_data = calculate_ranks_for_sample(z_scored_data, group_col=group_col)
     
     return ranked_data
