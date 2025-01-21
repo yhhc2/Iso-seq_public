@@ -1,5 +1,5 @@
 from .io import load_data
-from .preprocessing import filter_isoforms
+from .preprocessing import filter_based_on_counts
 from .calculations import apply_hypothesis_test
 from .z_score import calculate_z_score
 from .test_statistic import (
