@@ -122,25 +122,119 @@ def NMD_rare_steady_state_transcript(group):
     return group
 
 
-def process_hypothesis_test(filtered_data, group_col, test_statistic_func):
+def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_group_col=None, gene_level=True, bin_proportion=0.01):
     """
-    Combine hypothesis testing, z-score calculation, and ranking into a single function.
+    Combine hypothesis testing, z-score calculation, ranking, and additional metrics into a single function.
     
     Parameters:
     - filtered_data (pd.DataFrame): The filtered data to process.
     - group_col (str): The column to group by (e.g., 'Isoform_PBid').
     - test_statistic_func (function): The hypothesis test function to apply.
+    - gene_group_col (str, optional): The column to group by at the gene level. Defaults to group_col.
+    - gene_level (bool): Whether to aggregate at the gene level before processing.
+    - bin_proportion (float): Bin proportion threshold for low-abundance isoforms.
     
     Returns:
-    - pd.DataFrame: Ranked data after applying hypothesis test, calculating z-scores, and ranks.
+    - pd.DataFrame: Ranked data with additional calculated columns.
     """
+    if gene_group_col is None:
+        gene_group_col = group_col
+
+    if gene_level:
+        # Aggregate counts at the gene level
+        gene_level_data = filtered_data.groupby([gene_group_col, "Sample"]).agg(
+            cyclo_count=("cyclo_count", "sum"),
+            noncyclo_count=("noncyclo_count", "sum"),
+            Cyclo_TPM=("Cyclo_TPM", "sum"),
+            Noncyclo_TPM=("Noncyclo_TPM", "sum")
+        ).reset_index()
+
+        # If using NMD_rare_steady_state_transcript, prepare bin-related metrics
+        if test_statistic_func == NMD_rare_steady_state_transcript:
+            # Create bins
+            filtered_data["bin"] = filtered_data["isoform_noncyclo_proportion"].apply(
+                lambda x: "Bin1_le" if x <= bin_proportion else "Bin2_g"
+            )
+
+            # Aggregate counts for bins
+            bin_aggregated = filtered_data.groupby(["Sample", gene_group_col, "bin"]).agg(
+                Total_bin_cyclo_count=("cyclo_count", "sum"),
+                Total_bin_noncyclo_count=("noncyclo_count", "sum")
+            ).reset_index()
+
+            # Pivot the bin-related data to wide format
+            wide_result = bin_aggregated.pivot_table(
+                index=["Sample", gene_group_col],
+                columns="bin",
+                values=["Total_bin_cyclo_count", "Total_bin_noncyclo_count"],
+                fill_value=0
+            )
+            # Flatten MultiIndex columns
+            wide_result.columns = [
+                f"{col[0]}_{col[1]}" for col in wide_result.columns.to_flat_index()
+            ]
+            wide_result.reset_index(inplace=True)
+
+            # Merge wide_result with the gene-level data
+            gene_level_data = gene_level_data.merge(wide_result, on=["Sample", gene_group_col], how="left")
+
+            # Calculate bin-related proportions
+            gene_level_data["proportion_in_Bin1_cyclo"] = gene_level_data["Total_bin_cyclo_count_Bin1_le"] / (
+                gene_level_data["Total_bin_cyclo_count_Bin1_le"] + gene_level_data["Total_bin_cyclo_count_Bin2_g"]
+            )
+            gene_level_data["proportion_in_Bin1_noncyclo"] = gene_level_data["Total_bin_noncyclo_count_Bin1_le"] / (
+                gene_level_data["Total_bin_noncyclo_count_Bin1_le"] + gene_level_data["Total_bin_noncyclo_count_Bin2_g"]
+            )
+
+            # Handle NaN values
+            gene_level_data.fillna(0, inplace=True)
+
+            # Calculate bin proportion difference
+            gene_level_data["bin_proportion_difference"] = (
+                gene_level_data["proportion_in_Bin1_cyclo"] - gene_level_data["proportion_in_Bin1_noncyclo"]
+            ) / (
+                gene_level_data["proportion_in_Bin1_cyclo"] + gene_level_data["proportion_in_Bin1_noncyclo"]
+            )
+
+        # Use gene-level data for the rest of the process
+        processed_data = gene_level_data
+    else:
+        processed_data = filtered_data
+
+    # Add additional metrics based on the test statistic function
+    if test_statistic_func == NMD_test_statistic:
+        processed_data["CycloFraction"] = processed_data["cyclo_count"] / processed_data["total_cyclo"]
+        processed_data["NoncycloFraction"] = processed_data["noncyclo_count"] / processed_data["total_noncyclo"]
+        processed_data["NormalizedCycloFraction"] = processed_data["CycloFraction"] / (
+            processed_data["CycloFraction"] + processed_data["NoncycloFraction"]
+        )
+        processed_data["NormalizedNoncycloFraction"] = processed_data["NoncycloFraction"] / (
+            processed_data["CycloFraction"] + processed_data["NoncycloFraction"]
+        )
+        processed_data["NormalizedFractionDifference"] = (
+            processed_data["NormalizedCycloFraction"] - processed_data["NormalizedNoncycloFraction"]
+        )
+    elif test_statistic_func in [Noncyclo_Expression_Outlier_LOE, Noncyclo_Expression_Outlier_GOE]:
+        processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("mean")
+        processed_data["SD_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("std")
+        processed_data["Noncyclo_Z_Score"] = (
+            processed_data["Noncyclo_TPM"] - processed_data["Avg_Noncyclo_TPM"]
+        ) / processed_data["SD_Noncyclo_TPM"]
+    elif test_statistic_func in [Cyclo_Expression_Outlier_LOE, Cyclo_Expression_Outlier_GOE]:
+        processed_data["Avg_Cyclo_TPM"] = processed_data.groupby(group_col)["Cyclo_TPM"].transform("mean")
+        processed_data["SD_Cyclo_TPM"] = processed_data.groupby(group_col)["Cyclo_TPM"].transform("std")
+        processed_data["Cyclo_Z_Score"] = (
+            processed_data["Cyclo_TPM"] - processed_data["Avg_Cyclo_TPM"]
+        ) / processed_data["SD_Cyclo_TPM"]
+
     # Apply hypothesis test
-    tested_data = apply_hypothesis_test(filtered_data, group_col, test_statistic_func)
+    tested_data = apply_hypothesis_test(processed_data, group_col=gene_group_col if gene_level else group_col, test_statistic_func=test_statistic_func)
     
     # Calculate z-scores
-    z_scored_data = calculate_z_score(tested_data, group_col=group_col, stat_col='test_statistic')
+    z_scored_data = calculate_z_score(tested_data, group_col=gene_group_col if gene_level else group_col, stat_col="test_statistic")
     
     # Calculate ranks
-    ranked_data = calculate_ranks_for_sample(z_scored_data, group_col=group_col)
+    ranked_data = calculate_ranks_for_sample(z_scored_data, group_col=gene_group_col if gene_level else group_col)
     
     return ranked_data
+
