@@ -150,6 +150,14 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
     if missing_columns:
         raise KeyError(f"The following required columns are missing from the input data: {missing_columns}")
 
+    # Calculate gene-level counts
+    filtered_data["gene_cyclo_count"] = filtered_data.groupby([filtered_data, "Sample"])["cyclo_count"].transform("sum")
+    filtered_data["gene_noncyclo_count"] = filtered_data.groupby([filtered_data, "Sample"])["noncyclo_count"].transform("sum")
+    
+    # Calculate isoform proportions
+    filtered_data["isoform_cyclo_proportion"] = filtered_data["cyclo_count"] / filtered_data["gene_cyclo_count"]
+    filtered_data["isoform_noncyclo_proportion"] = filtered_data["noncyclo_count"] / filtered_data["gene_noncyclo_count"]
+
     # Gene-level aggregation if specified
     if gene_level:
         # Aggregate counts at the gene level
