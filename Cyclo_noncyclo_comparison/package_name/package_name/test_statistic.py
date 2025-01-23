@@ -128,7 +128,7 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
     
     Parameters:
     - filtered_data (pd.DataFrame): The filtered data to process.
-    - group_col (str): The column to group by (e.g., 'Isoform_PBid').
+    - group_col (str): The column to group by (e.g., 'Isoform').
     - test_statistic_func (function): The hypothesis test function to apply.
     - gene_group_col (str, optional): The column to group by at the gene level. Defaults to group_col.
     - gene_level (bool): Whether to aggregate at the gene level before processing.
@@ -140,45 +140,59 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
     if gene_group_col is None:
         gene_group_col = group_col
 
+    # Ensure the required columns are present
+    required_columns = [
+        "Isoform", "Sample", "HP1_cyclo_count", "HP2_cyclo_count", "HP1_noncyclo_count",
+        "HP2_noncyclo_count", "cyclo_count", "noncyclo_count", "total_cyclo", "total_noncyclo",
+        "Cyclo_TPM", "Noncyclo_TPM", "associated_gene"
+    ]
+    missing_columns = [col for col in required_columns if col not in filtered_data.columns]
+    if missing_columns:
+        raise KeyError(f"The following required columns are missing from the input data: {missing_columns}")
+
+    # Gene-level aggregation if specified
     if gene_level:
         # Aggregate counts at the gene level
         gene_level_data = filtered_data.groupby([gene_group_col, "Sample"]).agg(
+            HP1_cyclo_count=("HP1_cyclo_count", "sum"),
+            HP2_cyclo_count=("HP2_cyclo_count", "sum"),
+            HP1_noncyclo_count=("HP1_noncyclo_count", "sum"),
+            HP2_noncyclo_count=("HP2_noncyclo_count", "sum"),
             cyclo_count=("cyclo_count", "sum"),
             noncyclo_count=("noncyclo_count", "sum"),
             Cyclo_TPM=("Cyclo_TPM", "sum"),
-            Noncyclo_TPM=("Noncyclo_TPM", "sum")
+            Noncyclo_TPM=("Noncyclo_TPM", "sum"),
+            total_cyclo=("total_cyclo", "first"),  # Retain total_cyclo from input
+            total_noncyclo=("total_noncyclo", "first"),  # Retain total_noncyclo from input
         ).reset_index()
 
-        # If using NMD_rare_steady_state_transcript, prepare bin-related metrics
         if test_statistic_func == NMD_rare_steady_state_transcript:
-            # Create bins
+            # Create bins and calculate aggregated values
             filtered_data["bin"] = filtered_data["isoform_noncyclo_proportion"].apply(
                 lambda x: "Bin1_le" if x <= bin_proportion else "Bin2_g"
             )
 
-            # Aggregate counts for bins
             bin_aggregated = filtered_data.groupby(["Sample", gene_group_col, "bin"]).agg(
                 Total_bin_cyclo_count=("cyclo_count", "sum"),
                 Total_bin_noncyclo_count=("noncyclo_count", "sum")
             ).reset_index()
 
-            # Pivot the bin-related data to wide format
+            # Pivot to wide format
             wide_result = bin_aggregated.pivot_table(
                 index=["Sample", gene_group_col],
                 columns="bin",
                 values=["Total_bin_cyclo_count", "Total_bin_noncyclo_count"],
                 fill_value=0
             )
-            # Flatten MultiIndex columns
             wide_result.columns = [
                 f"{col[0]}_{col[1]}" for col in wide_result.columns.to_flat_index()
             ]
             wide_result.reset_index(inplace=True)
 
-            # Merge wide_result with the gene-level data
+            # Merge with gene-level data
             gene_level_data = gene_level_data.merge(wide_result, on=["Sample", gene_group_col], how="left")
 
-            # Calculate bin-related proportions
+            # Calculate proportions and differences
             gene_level_data["proportion_in_Bin1_cyclo"] = gene_level_data["Total_bin_cyclo_count_Bin1_le"] / (
                 gene_level_data["Total_bin_cyclo_count_Bin1_le"] + gene_level_data["Total_bin_cyclo_count_Bin2_g"]
             )
@@ -186,17 +200,13 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
                 gene_level_data["Total_bin_noncyclo_count_Bin1_le"] + gene_level_data["Total_bin_noncyclo_count_Bin2_g"]
             )
 
-            # Handle NaN values
             gene_level_data.fillna(0, inplace=True)
-
-            # Calculate bin proportion difference
             gene_level_data["bin_proportion_difference"] = (
                 gene_level_data["proportion_in_Bin1_cyclo"] - gene_level_data["proportion_in_Bin1_noncyclo"]
             ) / (
                 gene_level_data["proportion_in_Bin1_cyclo"] + gene_level_data["proportion_in_Bin1_noncyclo"]
             )
 
-        # Use gene-level data for the rest of the process
         processed_data = gene_level_data
     else:
         processed_data = filtered_data
@@ -237,4 +247,5 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
     ranked_data = calculate_ranks_for_sample(z_scored_data, group_col=gene_group_col if gene_level else group_col)
     
     return ranked_data
+
 
