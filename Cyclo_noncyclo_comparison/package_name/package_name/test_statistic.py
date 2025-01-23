@@ -208,8 +208,12 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
             )
 
         processed_data = gene_level_data
+
+        group_col = gene_group_col
+
     else:
         processed_data = filtered_data
+
 
     # Add additional metrics based on the test statistic function
     if test_statistic_func == NMD_test_statistic:
@@ -225,7 +229,7 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
             processed_data["NormalizedCycloFraction"] - processed_data["NormalizedNoncycloFraction"]
         )
     elif test_statistic_func in [Noncyclo_Expression_Outlier_LOE, Noncyclo_Expression_Outlier_GOE]:
-        processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("mean")
+        processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("mean") #LEFT HERE. Use gene group col if gene level
         processed_data["SD_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("std")
         processed_data["Noncyclo_Z_Score"] = (
             processed_data["Noncyclo_TPM"] - processed_data["Avg_Noncyclo_TPM"]
