@@ -122,7 +122,7 @@ def NMD_rare_steady_state_transcript(group):
     return group
 
 
-def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_group_col=None, gene_level=True, bin_proportion=0.01):
+def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_group_col=None, gene_level=True, bin_proportion=0.01, filter_before_ranking=True):
     """
     Combine hypothesis testing, z-score calculation, ranking, and additional metrics into a single function.
     
@@ -244,7 +244,6 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
         processed_data["NormalizedFractionDifference"] = (
             processed_data["NormalizedCycloFraction"] - processed_data["NormalizedNoncycloFraction"]
         )
-        processed_data = processed_data[processed_data["NormalizedFractionDifference"] > 0]
 
     elif test_statistic_func in [Noncyclo_Expression_Outlier_LOE, Noncyclo_Expression_Outlier_GOE]:
         processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("mean")
@@ -252,10 +251,6 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
         processed_data["Noncyclo_Z_Score"] = (
             processed_data["Noncyclo_TPM"] - processed_data["Avg_Noncyclo_TPM"]
         ) / processed_data["SD_Noncyclo_TPM"]
-        if test_statistic_func == Noncyclo_Expression_Outlier_LOE:
-            processed_data = processed_data[processed_data["Noncyclo_Z_Score"] < 0]
-        elif test_statistic_func == Noncyclo_Expression_Outlier_GOE:
-            processed_data = processed_data[processed_data["Noncyclo_Z_Score"] > 0]
 
     elif test_statistic_func in [Cyclo_Expression_Outlier_LOE, Cyclo_Expression_Outlier_GOE]:
         processed_data["Avg_Cyclo_TPM"] = processed_data.groupby(group_col)["Cyclo_TPM"].transform("mean")
@@ -263,10 +258,6 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
         processed_data["Cyclo_Z_Score"] = (
             processed_data["Cyclo_TPM"] - processed_data["Avg_Cyclo_TPM"]
         ) / processed_data["SD_Cyclo_TPM"]
-        if test_statistic_func == Cyclo_Expression_Outlier_LOE:
-            processed_data = processed_data[processed_data["Cyclo_Z_Score"] < 0]
-        elif test_statistic_func == Cyclo_Expression_Outlier_GOE:
-            processed_data = processed_data[processed_data["Cyclo_Z_Score"] > 0]
 
     # Apply hypothesis test
     tested_data = apply_hypothesis_test(processed_data, group_col=gene_group_col if gene_level else group_col, test_statistic_func=test_statistic_func)
@@ -274,6 +265,22 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
     # Calculate z-scores
     z_scored_data = calculate_z_score(tested_data, group_col=gene_group_col if gene_level else group_col, stat_col="test_statistic")
     
+    #Filter before ranking
+    if filter_before_ranking == True:
+        if test_statistic_func == NMD_rare_steady_state_transcript:
+            processed_data = processed_data[processed_data["bin_proportion_difference"] > 0]
+        elif test_statistic_func == NMD_test_statistic:
+            processed_data = processed_data[processed_data["NormalizedFractionDifference"] > 0]
+        elif test_statistic_func == Noncyclo_Expression_Outlier_LOE:
+            processed_data = processed_data[processed_data["Noncyclo_Z_Score"] < 0]
+        elif test_statistic_func == Noncyclo_Expression_Outlier_GOE:
+            processed_data = processed_data[processed_data["Noncyclo_Z_Score"] > 0]
+        elif test_statistic_func == Cyclo_Expression_Outlier_LOE:
+            processed_data = processed_data[processed_data["Cyclo_Z_Score"] < 0]
+        elif test_statistic_func == Cyclo_Expression_Outlier_GOE:
+            processed_data = processed_data[processed_data["Cyclo_Z_Score"] > 0]
+
+
     # Calculate ranks
     ranked_data = calculate_ranks_for_sample(z_scored_data, group_col=gene_group_col if gene_level else group_col)
     
