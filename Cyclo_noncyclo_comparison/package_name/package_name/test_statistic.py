@@ -137,6 +137,10 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
     Returns:
     - pd.DataFrame: Ranked data with additional calculated columns.
     """
+
+    # Make a copy of the input data to avoid modifying the original
+    filtered_data = filtered_data.copy()
+    
     if gene_group_col is None:
         gene_group_col = group_col
 
