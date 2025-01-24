@@ -132,6 +132,12 @@ def create_long_format(expression_matrix, sample_info=None):
     aggregated_data["Cyclo_TPM"] = (aggregated_data["cyclo_count"] / aggregated_data["total_cyclo"]) * 1e6
     aggregated_data["Noncyclo_TPM"] = (aggregated_data["noncyclo_count"] / aggregated_data["total_noncyclo"]) * 1e6
 
+    
+    # Calculate Cyclo_TPM_rank and Noncyclo_TPM_rank with average ranking for ties. Should go from 1 to number of patients. The higher the rank, the larger the TPM.
+    aggregated_data["Cyclo_TPM_Rank"] = aggregated_data.groupby("Sample")["Cyclo_TPM"].rank(ascending=False, method="average")
+    aggregated_data["Noncyclo_TPM_Rank"] = aggregated_data.groupby("Sample")["Noncyclo_TPM"].rank(ascending=False, method="average")
+
+
     # Step 8: Drop unnecessary columns (e.g., totals)
     # aggregated_data = aggregated_data.drop(columns=["total_cyclo", "total_noncyclo"])
 

@@ -140,7 +140,7 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
 
     # Make a copy of the input data to avoid modifying the original
     filtered_data = filtered_data.copy()
-    
+
     if gene_group_col is None:
         gene_group_col = group_col
 
@@ -176,6 +176,11 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
             total_cyclo=("total_cyclo", "first"),  # Retain total_cyclo from input
             total_noncyclo=("total_noncyclo", "first"),  # Retain total_noncyclo from input
         ).reset_index()
+
+        # Recalculate Cyclo_TPM_rank and Noncyclo_TPM_rank
+        # Calculate Cyclo_TPM_rank and Noncyclo_TPM_rank with average ranking for ties. Should go from 1 to number of patients. The higher the rank, the larger the TPM.
+        gene_level_data["Cyclo_TPM_Rank"] = gene_level_data.groupby("Sample")["Cyclo_TPM"].rank(ascending=False, method="average")
+        gene_level_data["Noncyclo_TPM_Rank"] = gene_level_data.groupby("Sample")["Noncyclo_TPM"].rank(ascending=False, method="average")
 
         if test_statistic_func == NMD_rare_steady_state_transcript:
             # Create bins and calculate aggregated values
@@ -228,6 +233,7 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
 
     # Add additional metrics based on the test statistic function
     if test_statistic_func == NMD_test_statistic:
+
         processed_data["CycloFraction"] = processed_data["cyclo_count"] / processed_data["total_cyclo"]
         processed_data["NoncycloFraction"] = processed_data["noncyclo_count"] / processed_data["total_noncyclo"]
         processed_data["NormalizedCycloFraction"] = processed_data["CycloFraction"] / (
@@ -239,18 +245,29 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
         processed_data["NormalizedFractionDifference"] = (
             processed_data["NormalizedCycloFraction"] - processed_data["NormalizedNoncycloFraction"]
         )
+        processed_data = processed_data[processed_data["NormalizedFractionDifference"] > 0]
+
     elif test_statistic_func in [Noncyclo_Expression_Outlier_LOE, Noncyclo_Expression_Outlier_GOE]:
         processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("mean")
         processed_data["SD_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("std")
         processed_data["Noncyclo_Z_Score"] = (
             processed_data["Noncyclo_TPM"] - processed_data["Avg_Noncyclo_TPM"]
         ) / processed_data["SD_Noncyclo_TPM"]
+        if test_statistic_func == Noncyclo_Expression_Outlier_LOE:
+            processed_data = processed_data[processed_data["Noncyclo_Z_Score"] < 0]
+        elif test_statistic_func == Noncyclo_Expression_Outlier_GOE:
+            processed_data = processed_data[processed_data["Noncyclo_Z_Score"] > 0]
+
     elif test_statistic_func in [Cyclo_Expression_Outlier_LOE, Cyclo_Expression_Outlier_GOE]:
         processed_data["Avg_Cyclo_TPM"] = processed_data.groupby(group_col)["Cyclo_TPM"].transform("mean")
         processed_data["SD_Cyclo_TPM"] = processed_data.groupby(group_col)["Cyclo_TPM"].transform("std")
         processed_data["Cyclo_Z_Score"] = (
             processed_data["Cyclo_TPM"] - processed_data["Avg_Cyclo_TPM"]
         ) / processed_data["SD_Cyclo_TPM"]
+        if test_statistic_func == Cyclo_Expression_Outlier_LOE:
+            processed_data = processed_data[processed_data["Cyclo_Z_Score"] < 0]
+        elif test_statistic_func == Cyclo_Expression_Outlier_GOE:
+            processed_data = processed_data[processed_data["Cyclo_Z_Score"] > 0]
 
     # Apply hypothesis test
     tested_data = apply_hypothesis_test(processed_data, group_col=gene_group_col if gene_level else group_col, test_statistic_func=test_statistic_func)
