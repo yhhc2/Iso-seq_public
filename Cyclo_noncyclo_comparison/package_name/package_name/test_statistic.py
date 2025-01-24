@@ -150,11 +150,10 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
     if missing_columns:
         raise KeyError(f"The following required columns are missing from the input data: {missing_columns}")
 
-    # Calculate gene-level counts
-    filtered_data["gene_cyclo_count"] = filtered_data.groupby([filtered_data, "Sample"])["cyclo_count"].transform("sum")
-    filtered_data["gene_noncyclo_count"] = filtered_data.groupby([filtered_data, "Sample"])["noncyclo_count"].transform("sum")
-    
-    # Calculate isoform proportions
+    # Add gene-level metrics
+    filtered_data["gene_cyclo_count"] = filtered_data.groupby([gene_group_col, "Sample"])["cyclo_count"].transform("sum")
+    filtered_data["gene_noncyclo_count"] = filtered_data.groupby([gene_group_col, "Sample"])["noncyclo_count"].transform("sum")
+
     filtered_data["isoform_cyclo_proportion"] = filtered_data["cyclo_count"] / filtered_data["gene_cyclo_count"]
     filtered_data["isoform_noncyclo_proportion"] = filtered_data["noncyclo_count"] / filtered_data["gene_noncyclo_count"]
 
@@ -237,7 +236,7 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
             processed_data["NormalizedCycloFraction"] - processed_data["NormalizedNoncycloFraction"]
         )
     elif test_statistic_func in [Noncyclo_Expression_Outlier_LOE, Noncyclo_Expression_Outlier_GOE]:
-        processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("mean") #LEFT HERE. Use gene group col if gene level
+        processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("mean")
         processed_data["SD_Noncyclo_TPM"] = processed_data.groupby(group_col)["Noncyclo_TPM"].transform("std")
         processed_data["Noncyclo_Z_Score"] = (
             processed_data["Noncyclo_TPM"] - processed_data["Avg_Noncyclo_TPM"]
