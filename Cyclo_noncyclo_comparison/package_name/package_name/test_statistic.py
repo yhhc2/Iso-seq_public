@@ -146,9 +146,8 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
 
     # Ensure the required columns are present
     required_columns = [
-        "Isoform", "Sample", "HP1_cyclo_count", "HP2_cyclo_count", "HP1_noncyclo_count",
-        "HP2_noncyclo_count", "cyclo_count", "noncyclo_count", "total_cyclo", "total_noncyclo",
-        "Cyclo_TPM", "Noncyclo_TPM", "associated_gene"
+        "Isoform", "Sample", "cyclo_count", "noncyclo_count", "total_cyclo", "total_noncyclo",
+        "Cyclo_TPM", "Noncyclo_TPM"
     ]
     missing_columns = [col for col in required_columns if col not in filtered_data.columns]
     if missing_columns:
