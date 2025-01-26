@@ -162,19 +162,34 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
 
     # Gene-level aggregation if specified
     if gene_level:
-        # Aggregate counts at the gene level
-        gene_level_data = filtered_data.groupby([gene_group_col, "Sample"]).agg(
-            HP1_cyclo_count=("HP1_cyclo_count", "sum"),
-            HP2_cyclo_count=("HP2_cyclo_count", "sum"),
-            HP1_noncyclo_count=("HP1_noncyclo_count", "sum"),
-            HP2_noncyclo_count=("HP2_noncyclo_count", "sum"),
-            cyclo_count=("cyclo_count", "sum"),
-            noncyclo_count=("noncyclo_count", "sum"),
-            Cyclo_TPM=("Cyclo_TPM", "sum"),
-            Noncyclo_TPM=("Noncyclo_TPM", "sum"),
-            total_cyclo=("total_cyclo", "first"),  # Retain total_cyclo from input
-            total_noncyclo=("total_noncyclo", "first"),  # Retain total_noncyclo from input
-        ).reset_index()
+        
+        # Define all possible aggregation columns
+        aggregation_dict = {
+            "cyclo_count": ("cyclo_count", "sum"),
+            "noncyclo_count": ("noncyclo_count", "sum"),
+            "Cyclo_TPM": ("Cyclo_TPM", "sum"),
+            "Noncyclo_TPM": ("Noncyclo_TPM", "sum"),
+            "total_cyclo": ("total_cyclo", "first"),
+            "total_noncyclo": ("total_noncyclo", "first"),
+        }
+
+        # Conditionally add HP1/HP2 columns if they exist
+        optional_columns = [
+            "HP1_cyclo_count",
+            "HP2_cyclo_count",
+            "HP1_noncyclo_count",
+            "HP2_noncyclo_count",
+        ]
+        for col in optional_columns:
+            if col in filtered_data.columns:
+                aggregation_dict[col] = (col, "sum")
+
+        # Aggregate counts at the gene level using the dynamically constructed dictionary
+        gene_level_data = (
+            filtered_data.groupby([gene_group_col, "Sample"])
+            .agg(**aggregation_dict)
+            .reset_index()
+        )
 
         # Recalculate Cyclo_TPM_rank and Noncyclo_TPM_rank
         # Calculate Cyclo_TPM_rank and Noncyclo_TPM_rank with average ranking for ties. Should go from 1 to number of patients. The higher the rank, the larger the TPM.
