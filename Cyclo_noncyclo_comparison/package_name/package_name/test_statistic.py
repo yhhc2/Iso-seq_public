@@ -154,8 +154,8 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
         raise KeyError(f"The following required columns are missing from the input data: {missing_columns}")
 
     # Add gene-level metrics
-    filtered_data["gene_cyclo_count"] = filtered_data.groupby([gene_group_col, "Sample"], group_keys=False)["cyclo_count"].transform("sum")
-    filtered_data["gene_noncyclo_count"] = filtered_data.groupby([gene_group_col, "Sample"], group_keys=False)["noncyclo_count"].transform("sum")
+    filtered_data["gene_cyclo_count"] = filtered_data.groupby([gene_group_col, "Sample"], include_groups=False)["cyclo_count"].transform("sum")
+    filtered_data["gene_noncyclo_count"] = filtered_data.groupby([gene_group_col, "Sample"], include_groups=False)["noncyclo_count"].transform("sum")
 
     filtered_data["isoform_cyclo_proportion"] = filtered_data["cyclo_count"] / filtered_data["gene_cyclo_count"]
     filtered_data["isoform_noncyclo_proportion"] = filtered_data["noncyclo_count"] / filtered_data["gene_noncyclo_count"]
@@ -186,15 +186,15 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
 
         # Aggregate counts at the gene level using the dynamically constructed dictionary
         gene_level_data = (
-            filtered_data.groupby([gene_group_col, "Sample"], group_keys=False)
+            filtered_data.groupby([gene_group_col, "Sample"], include_groups=False)
             .agg(**aggregation_dict)
             .reset_index()
         )
 
         # Recalculate Cyclo_TPM_rank and Noncyclo_TPM_rank
         # Calculate Cyclo_TPM_rank and Noncyclo_TPM_rank with average ranking for ties. Should go from 1 to number of patients. The higher the rank, the larger the TPM.
-        gene_level_data["Cyclo_TPM_Rank"] = gene_level_data.groupby("Sample", group_keys=False)["Cyclo_TPM"].rank(ascending=False, method="average")
-        gene_level_data["Noncyclo_TPM_Rank"] = gene_level_data.groupby("Sample", group_keys=False)["Noncyclo_TPM"].rank(ascending=False, method="average")
+        gene_level_data["Cyclo_TPM_Rank"] = gene_level_data.groupby("Sample", include_groups=False)["Cyclo_TPM"].rank(ascending=False, method="average")
+        gene_level_data["Noncyclo_TPM_Rank"] = gene_level_data.groupby("Sample", include_groups=False)["Noncyclo_TPM"].rank(ascending=False, method="average")
 
         if test_statistic_func == NMD_rare_steady_state_transcript:
             # Create bins and calculate aggregated values
@@ -202,7 +202,7 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
                 lambda x: "Bin1_le" if x <= bin_proportion else "Bin2_g"
             )
 
-            bin_aggregated = filtered_data.groupby(["Sample", gene_group_col, "bin"], group_keys=False).agg(
+            bin_aggregated = filtered_data.groupby(["Sample", gene_group_col, "bin"], include_groups=False).agg(
                 Total_bin_cyclo_count=("cyclo_count", "sum"),
                 Total_bin_noncyclo_count=("noncyclo_count", "sum")
             ).reset_index()
@@ -261,15 +261,15 @@ def process_hypothesis_test(filtered_data, group_col, test_statistic_func, gene_
         )
 
     elif test_statistic_func in [Noncyclo_Expression_Outlier_LOE, Noncyclo_Expression_Outlier_GOE]:
-        processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col, group_keys=False)["Noncyclo_TPM"].transform("mean")
-        processed_data["SD_Noncyclo_TPM"] = processed_data.groupby(group_col, group_keys=False)["Noncyclo_TPM"].transform("std")
+        processed_data["Avg_Noncyclo_TPM"] = processed_data.groupby(group_col, include_groups=False)["Noncyclo_TPM"].transform("mean")
+        processed_data["SD_Noncyclo_TPM"] = processed_data.groupby(group_col, include_groups=False)["Noncyclo_TPM"].transform("std")
         processed_data["Noncyclo_Z_Score"] = (
             processed_data["Noncyclo_TPM"] - processed_data["Avg_Noncyclo_TPM"]
         ) / processed_data["SD_Noncyclo_TPM"]
 
     elif test_statistic_func in [Cyclo_Expression_Outlier_LOE, Cyclo_Expression_Outlier_GOE]:
-        processed_data["Avg_Cyclo_TPM"] = processed_data.groupby(group_col, group_keys=False)["Cyclo_TPM"].transform("mean")
-        processed_data["SD_Cyclo_TPM"] = processed_data.groupby(group_col, group_keys=False)["Cyclo_TPM"].transform("std")
+        processed_data["Avg_Cyclo_TPM"] = processed_data.groupby(group_col, include_groups=False)["Cyclo_TPM"].transform("mean")
+        processed_data["SD_Cyclo_TPM"] = processed_data.groupby(group_col, include_groups=False)["Cyclo_TPM"].transform("std")
         processed_data["Cyclo_Z_Score"] = (
             processed_data["Cyclo_TPM"] - processed_data["Avg_Cyclo_TPM"]
         ) / processed_data["SD_Cyclo_TPM"]

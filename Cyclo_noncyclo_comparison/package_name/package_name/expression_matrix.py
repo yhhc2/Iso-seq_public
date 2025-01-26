@@ -109,7 +109,7 @@ def create_long_format(expression_matrix, sample_info=None):
     expression_data["noncyclo_count_raw"] = (expression_data["cyclo"] == "noncyclo") * expression_data["count"]
 
     # Step 6: Aggregate counts by Isoform-Sample
-    aggregated_data = expression_data.groupby(["Isoform", "patient"], group_keys=False).agg(
+    aggregated_data = expression_data.groupby(["Isoform", "patient"], include_groups=False).agg(
         HP1_cyclo_count=("HP1_cyclo_count", "sum"),
         HP2_cyclo_count=("HP2_cyclo_count", "sum"),
         HP1_noncyclo_count=("HP1_noncyclo_count", "sum"),
@@ -122,7 +122,7 @@ def create_long_format(expression_matrix, sample_info=None):
     aggregated_data.rename(columns={"patient": "Sample"}, inplace=True)
     
     # Step 7: Calculate total reads within each Sample
-    sample_totals = aggregated_data.groupby("Sample", group_keys=False)[["cyclo_count", "noncyclo_count"]].sum()
+    sample_totals = aggregated_data.groupby("Sample", include_groups=False)[["cyclo_count", "noncyclo_count"]].sum()
     sample_totals = sample_totals.rename(columns={"cyclo_count": "total_cyclo", "noncyclo_count": "total_noncyclo"})
 
     # Merge totals back to the aggregated data
@@ -138,8 +138,8 @@ def create_long_format(expression_matrix, sample_info=None):
 
     
     # Calculate Cyclo_TPM_rank and Noncyclo_TPM_rank with average ranking for ties. Should go from 1 to number of patients. The higher the rank, the larger the TPM.
-    aggregated_data["Cyclo_TPM_Rank"] = aggregated_data.groupby("Sample", group_keys=False)["Cyclo_TPM"].rank(ascending=False, method="average")
-    aggregated_data["Noncyclo_TPM_Rank"] = aggregated_data.groupby("Sample", group_keys=False)["Noncyclo_TPM"].rank(ascending=False, method="average")
+    aggregated_data["Cyclo_TPM_Rank"] = aggregated_data.groupby("Sample", include_groups=False)["Cyclo_TPM"].rank(ascending=False, method="average")
+    aggregated_data["Noncyclo_TPM_Rank"] = aggregated_data.groupby("Sample", include_groups=False)["Noncyclo_TPM"].rank(ascending=False, method="average")
 
 
     # Step 8: Drop unnecessary columns (e.g., totals)
