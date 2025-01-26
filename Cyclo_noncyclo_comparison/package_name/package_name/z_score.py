@@ -16,4 +16,4 @@ def calculate_z_score(df, group_col, stat_col):
             group.at[i, 'z_score'] = 0 if sd_all == 0 else (row[stat_col] - median_others) / sd_all
         return group
 
-    return df.groupby(group_col, group_keys=False).apply(z_score_func).reset_index(drop=True)
+    return df.groupby(group_col).apply(z_score_func).reset_index(drop=True)
