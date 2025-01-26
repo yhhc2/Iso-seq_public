@@ -11,7 +11,7 @@ def filter_based_on_counts(df, count_threshold=10, group_col='Isoform'):
     - pd.DataFrame: Filtered DataFrame with only the groups meeting the count threshold.
     """
     # Determine isoforms/groups to keep based on the threshold
-    isoforms_to_keep = df.groupby(group_col, include_groups=False).apply(
+    isoforms_to_keep = df.groupby(group_col, group_keys=False).apply(
         lambda group: any(group['cyclo_count'] >= count_threshold) or any(group['noncyclo_count'] >= count_threshold)
     )
     isoforms_to_keep = isoforms_to_keep[isoforms_to_keep].index.tolist()
