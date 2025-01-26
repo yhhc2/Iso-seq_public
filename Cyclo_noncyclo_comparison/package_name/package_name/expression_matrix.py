@@ -75,6 +75,10 @@ def create_long_format(expression_matrix, sample_info=None):
             "haplotype": None     # No haplotype information
         })
 
+    # If the patient column is not provided, set it to the same values as the sample column
+    if "patient" not in sample_info.columns:
+        sample_info["patient"] = sample_info["sample"]
+
     # Step 2: Filter sample columns to keep only those found in both the expression matrix and sample info
     valid_samples = expression_matrix.columns.intersection(sample_info["sample"])
     sample_info = sample_info[sample_info["sample"].isin(valid_samples)]
