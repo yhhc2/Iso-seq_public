@@ -12,6 +12,11 @@ setup(
         "seaborn>=0.13.2",
         "scipy>=1.15.1",
     ],
+    entry_points={
+        "console_scripts": [
+            "run_analysis=package_name.scripts.run_analysis:main",
+        ],
+    },
     author="Hank Cheng",
     description="Package for calculating test statistics and z-scores for isoforms.",
     classifiers=[
