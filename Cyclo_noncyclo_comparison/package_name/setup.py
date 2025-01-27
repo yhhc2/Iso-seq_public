@@ -14,7 +14,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "run_analysis=package_name.scripts.run_analysis:main",
+            "run_analysis=scripts.run_analysis:main",
         ],
     },
     author="Hank Cheng",
