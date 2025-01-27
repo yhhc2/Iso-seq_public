@@ -142,8 +142,10 @@ def create_long_format(expression_matrix, sample_info=None):
     aggregated_data["Noncyclo_TPM_Rank"] = aggregated_data.groupby("Isoform")["Noncyclo_TPM"].rank(ascending=False, method="average")
 
 
-    # Step 8: Drop unnecessary columns (e.g., totals)
-    # aggregated_data = aggregated_data.drop(columns=["total_cyclo", "total_noncyclo"])
+    # Step 8: Drop unnecessary columns.
+    # If the haplotype column are all empty or NaN, then we are not evalauting for haplotype separated information so these columns can be dropped.
+    if sample_info['haplotype'].replace('', float('NaN'), inplace=False).isna().all():
+        aggregated_data = aggregated_data.drop(columns=["HP1_cyclo_count", "HP2_cyclo_count", "HP1_noncyclo_count", "HP2_noncyclo_count"])
 
     # Step 9: Return the aggregated DataFrame
     return aggregated_data
